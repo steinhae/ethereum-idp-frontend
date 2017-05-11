@@ -8,6 +8,9 @@ import org.ethereum.geth.*;
 import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
+
+    private int counter = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,13 +37,16 @@ public class MainActivity extends AppCompatActivity {
             NewHeadHandler handler = new NewHeadHandler() {
                 @Override public void onError(String error) { }
                 @Override public void onNewHead(final Header header) {
-                    MainActivity.this.runOnUiThread(new Runnable() {
-                        public void run() {
-                            String txt = "#" + header.getNumber() + ": " + header.getHash().getHex().substring(0, 10) + "…\n";
-                            textbox.append(txt);
-                            Log.v("NewBlock",txt);
-                        }
-                    });
+                    if (counter % 25 == 0) {
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            public void run() {
+                                String txt = "#" + header.getNumber() + ": " + header.getHash().getHex().substring(0, 10) + "…\n";
+                                textbox.append(txt);
+                                Log.v("NewBlock", txt);
+                            }
+                        });
+                    }
+                    counter++;
                 }
             };
             ec.subscribeNewHead(ctx, handler,  16);
