@@ -23,7 +23,14 @@ public class MainActivity extends AppCompatActivity {
         Context ctx = new Context();
 
         try {
-            Node node = Geth.newNode(getFilesDir() + "/.ethereum", new NodeConfig());
+
+            NodeConfig nc = new NodeConfig();
+            nc.setEthereumNetworkID(3);
+            nc.setWhisperEnabled(true);
+            nc.setEthereumEnabled(true);
+            String genesis = Geth.testnetGenesis();
+            nc.setEthereumGenesis(genesis);
+            Node node = Geth.newNode(getFilesDir() + "/.ethereum", nc);
             node.start();
 
             NodeInfo info = node.getNodeInfo();
