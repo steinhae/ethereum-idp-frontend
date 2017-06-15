@@ -9,7 +9,25 @@ import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
 
-    private int counter = 0;
+    private long lastUpdate = 0;
+    private TextView textbox;
+
+    NewHeadHandler handler = new NewHeadHandler() {
+        @Override public void onError(String error) { }
+        @Override public void onNewHead(final Header header) {
+            long now = System.currentTimeMillis();
+            if (now - lastUpdate >= 1000) {
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        String txt = "#" + header.getNumber() + ": " + header.getHash().getHex().substring(0, 10) + "…\n";
+                        textbox.append(txt);
+                        Log.v("NewBlock", txt);
+                    }
+                });
+                lastUpdate = now;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         setTitle("Android In-Process Node");
-        final TextView textbox = (TextView) findViewById(R.id.textView);
+        textbox = (TextView) findViewById(R.id.textView);
         textbox.setMovementMethod(new ScrollingMovementMethod());
 
         Context ctx = new Context();
@@ -39,24 +57,11 @@ public class MainActivity extends AppCompatActivity {
             textbox.append("My protocols: " + info.getProtocols() + "\n\n");
 
             EthereumClient ec = node.getEthereumClient();
+            ec.subscribeNewHead(ctx, handler,  16);
             textbox.append("Latest block: " + ec.getBlockByNumber(ctx, -1).getNumber() + ", syncing...\n");
 
-            NewHeadHandler handler = new NewHeadHandler() {
-                @Override public void onError(String error) { }
-                @Override public void onNewHead(final Header header) {
-                    if (counter % 25 == 0) {
-                        MainActivity.this.runOnUiThread(new Runnable() {
-                            public void run() {
-                                String txt = "#" + header.getNumber() + ": " + header.getHash().getHex().substring(0, 10) + "…\n";
-                                textbox.append(txt);
-                                Log.v("NewBlock", txt);
-                            }
-                        });
-                    }
-                    counter++;
-                }
-            };
-            ec.subscribeNewHead(ctx, handler,  16);
+            lastUpdate = System.currentTimeMillis();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
