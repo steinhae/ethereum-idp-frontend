@@ -25,9 +25,16 @@
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btn_balance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:enabled="false"
-        android:text="Button" />
+        android:text="get Balance" />
+
+    <Button
+        android:id="@+id/btn_transaction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:text="Send Transaction" />
 </LinearLayout>
