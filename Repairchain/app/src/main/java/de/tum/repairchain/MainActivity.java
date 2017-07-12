@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.security.Key;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -41,8 +42,11 @@ public class MainActivity extends AppCompatActivity {
         try {
             BigInt amount = new BigInt(1000000000000000000l);
             BigInt gasLimit = new BigInt(200000l);
-            Transaction tx = new Transaction(1337l, new Address("0xAb54bF5311dDF905CF59bA8426505b671F1d8E96"), amount, gasLimit, ethereumClient.suggestGasPrice(ctx), null );
-            ethereumClient.sendTransaction(ctx, tx);
+            BigInt gasPrice = new BigInt(500000000000000000l);
+            Transaction tx = new Transaction(1337l, new Address("0xAb54bF5311dDF905CF59bA8426505b671F1d8E96"), amount, gasLimit, gasPrice, null);
+            keyStore.unlock(account, "***REMOVED***");
+            Transaction signedTx = keyStore.signTx(account, tx, new BigInt(3));
+            ethereumClient.sendTransaction(ctx, signedTx);
             Receipt txReceipt = ethereumClient.getTransactionReceipt(ctx, tx.getHash());
         } catch (Exception e) {
             e.printStackTrace();
