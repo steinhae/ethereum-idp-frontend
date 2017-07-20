@@ -28,6 +28,11 @@ public class UploadImage extends AppCompatActivity {
 
     }
 
+    @OnClick ({R.id.btn_done})
+    public void clickDoneButton(Button btn) {
+        finish();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
