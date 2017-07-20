@@ -14,9 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service
-            android:name="ipfs.IPFSDaemonService"
-            android:exported="false"
-            />
+            android:name="de.tum.repairchain.ipfs.IPFSDaemonService"
+            android:enabled="true"
+        />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ReportActivity" />
-        <activity android:name=".UploadImage"></activity>
+        <activity android:name=".UploadImage"/>
     </application>
 
 </manifest>

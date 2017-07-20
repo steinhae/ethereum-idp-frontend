@@ -1,24 +1,22 @@
 package de.tum.repairchain;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.SystemClock;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Button;
-
-import java.net.ConnectException;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.tum.repairchain.ipfs.IPFSDaemon;
 import de.tum.repairchain.ipfs.IPFSDaemonService;
 import de.tum.repairchain.ipfs.State;
+import io.ipfs.kotlin.IPFS;
 import io.ipfs.kotlin.model.BandWidthInfo;
 import io.ipfs.kotlin.model.VersionInfo;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
-import io.ipfs.kotlin.IPFS;
 
 public class UploadImage extends AppCompatActivity {
 
@@ -27,9 +25,8 @@ public class UploadImage extends AppCompatActivity {
 
     @OnClick ({R.id.btn_addFile})
     public void clickAddFileButton(Button btn) {
-        startInfoRefresh();
-    }
 
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +42,44 @@ public class UploadImage extends AppCompatActivity {
                     return null;
                 }
             });
+        } else {
+            if (!State.isDaemonRunning) {
+                startService();
+            }
         }
+    }
+
+    private void startService() {
         startService(new Intent(this, IPFSDaemonService.class));
         State.isDaemonRunning = true;
+
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("starting daemon");
+        progressDialog.show();
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                VersionInfo version = null;
+                while (version == null) {
+                    try {
+                        Thread.sleep(1000);
+                        version = new IPFS().getInfo().version();
+                    } catch (Exception e) {
+                        Log.d("Exception IPFS", "IPFS daemon is not running.");
+                    }
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressDialog.dismiss();
+                        startInfoRefresh();
+                    }
+                });
+            }
+        }).start();
     }
 
     @Override
