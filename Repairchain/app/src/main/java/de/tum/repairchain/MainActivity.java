@@ -1,5 +1,6 @@
 package de.tum.repairchain;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
@@ -25,6 +26,12 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.txt_latestblock) TextView txtLatestBlock;
     @BindView(R.id.btn_balance) Button btnAccountBalance;
     @BindView(R.id.btn_transaction) Button btnTransaction;
+
+    @OnClick({ R.id.btn_report })
+    public void clickReportButton(Button btn) {
+        Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
+        startActivity(intent);
+    }
 
     @OnClick({ R.id.btn_balance })
     public void clickBalanceButton(Button btn) {
