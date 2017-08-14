@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Repairchain</string>
+    <string name="description">Description</string>
+    <string name="upload">Upload image</string>
+    <string name="noImage">No image added</string>
+    <string name="tv_time">time</string>
+    <string name="submit">Submit</string>
 </resources>

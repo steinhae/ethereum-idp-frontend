@@ -1,15 +1,20 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'de.mobilej.unmock'
+apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 25
     buildToolsVersion '25.0.3'
 
     defaultConfig {
         applicationId "de.tum.repairchain"
-        minSdkVersion 20
-        targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion 23
+        targetSdkVersion 25
+        versionCode 10
+        versionName "0.10"
+        archivesBaseName = "IPFSDroid-$versionName"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -21,9 +26,15 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'org.ethereum:geth:1.6.7' // Change the version to the latest release
+    compile 'org.ethereum:geth:1.6.7'
     compile 'com.jakewharton:butterknife:8.6.0'
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
+    compile 'com.squareup.okio:okio:1.13.0'
+    compile "com.github.ligi:ipfs-api-kotlin:$current_version"
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.google.android.gms:play-services-maps:11.0.4'
+    testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
 }
