@@ -14,10 +14,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.math.BigInteger;
+import java.security.Key;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.Web3jFactory;
+import org.web3j.protocol.core.DefaultBlockParameter;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthGetBalance;
+import org.web3j.protocol.core.methods.response.Web3ClientVersion;
+import org.web3j.protocol.http.HttpService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +38,11 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.btn_transaction) Button btnTransaction;
     @BindView(R.id.txt_syncing) TextView txtSyncing;
 
+    public enum BlockchainConnector {
+        GETH,
+        WEB3J
+    };
+
     @OnClick({ R.id.btn_report })
     public void clickReportButton(Button btn) {
         Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
@@ -35,13 +51,29 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick({ R.id.btn_balance })
     public void clickBalanceButton(Button btn) {
-        try {
-            BigInt weiBalance = ethereumClient.getBalanceAt(ctx, account.getAddress(), -1);
-            double etherBalance =  Double.valueOf(weiBalance.toString()) / Math.pow(10, 18);
-            Toast.makeText(getApplicationContext(), "Balance: " + String.valueOf(etherBalance), Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            e.printStackTrace();
+        double etherBalance = 0;
+        if (connectionMethod == BlockchainConnector.GETH) {
+            try {
+                BigInt weiBalance = ethereumClient.getBalanceAt(ctx, account.getAddress(), -1);
+                etherBalance =  Double.valueOf(weiBalance.toString()) / Math.pow(10, 18);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (connectionMethod == BlockchainConnector.WEB3J) {
+            try {
+                EthGetBalance balance = web3jClient.ethGetBalance("0x96C9c314acfFab773bC95838d7487518D88D032d", DefaultBlockParameterName.LATEST).sendAsync().get();
+                BigInteger weiBalance = balance.getBalance();
+                etherBalance = weiBalance.doubleValue() / Math.pow(10, 18);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+        if (etherBalance != 0) {
+            Toast.makeText(getApplicationContext(), "Balance: " + String.valueOf(etherBalance), Toast.LENGTH_SHORT).show();
+        }
+
+        Toast.makeText(getApplicationContext(), "Balance: " + String.valueOf(etherBalance), Toast.LENGTH_SHORT).show();
+
     }
 
     @OnClick( { R.id.btn_transaction })
@@ -62,11 +94,13 @@ public class MainActivity extends AppCompatActivity {
 
     private long lastUpdate = 0;
     private EthereumClient ethereumClient;
+    private Web3j web3jClient;
     private Context ctx;
     private Node node;
     private KeyStore keyStore;
     private boolean firstHeader = false;
     private Account account;
+    private BlockchainConnector connectionMethod;
 
     NewHeadHandler handler = new NewHeadHandler() {
         @Override public void onError(String error) { }
@@ -100,23 +134,47 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        if (savedInstanceState == null) {
-            ctx = new Context();
-            if (initTestnetNode()) {
-                initKeyStore();
-                NodeInfo info = node.getNodeInfo();
-                //txtVersion.setText("My name: " + info.getName() + "\n");
-                //            textbox.append("My address: " + info.getListenerAddress() + "\n");
-                //            textbox.append("My protocols: " + info.getProtocols() + "\n\n");
+        connectionMethod = BlockchainConnector.WEB3J;
 
-                if (initEthereumNode()) {
-                    subscribeToNewHead();
-                } else {
-                    finish();
-                }
+        if (savedInstanceState == null) {
+            if (connectionMethod == BlockchainConnector.WEB3J) {
+                initWeb3jConnection();
+                enableButtons();
+            } else if (connectionMethod == BlockchainConnector.GETH) {
+                initGethConnection(savedInstanceState);
             }
         } else {
-            Log.d("OnCreate","Node already initialized.");
+            Log.d("OnCreate", "Node already initialized.");
+        }
+    }
+
+    private void initWeb3jConnection() {
+        web3jClient = Web3jFactory.build(new HttpService("http://192.168.1.7:8545"));
+        Web3ClientVersion web3ClientVersion = null;
+
+        try {
+            web3ClientVersion = web3jClient.web3ClientVersion().sendAsync().get();
+            String clientVersion = web3ClientVersion.getWeb3ClientVersion();
+            Log.i("Web3J connection", clientVersion.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initGethConnection(Bundle savedInstanceState) {
+        ctx = new Context();
+        if (initTestnetNode()) {
+            initKeyStore();
+            NodeInfo info = node.getNodeInfo();
+            txtVersion.setText("My name: " + info.getName() + "\n");
+            //            textbox.append("My address: " + info.getListenerAddress() + "\n");
+            //            textbox.append("My protocols: " + info.getProtocols() + "\n\n");
+
+            if (initEthereumNode()) {
+                subscribeToNewHead();
+            } else {
+                finish();
+            }
         }
     }
 
