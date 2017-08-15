@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -104,9 +103,12 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
+
+        setTitle("Create Report");
+
         ButterKnife.bind(this);
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-        tvTime = (TextView) findViewById(R.id.tv_time);
+        tvTime = (TextView) findViewById(R.id.txt_time);
         mapView = (MapView) findViewById(R.id.mv_current_location);
         mapView.onCreate(savedInstanceState);
         // needed to initialize GoogleMap object

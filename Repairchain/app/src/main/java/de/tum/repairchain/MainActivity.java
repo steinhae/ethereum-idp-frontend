@@ -14,7 +14,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.security.Key;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.txt_latestblock) TextView txtLatestBlock;
     @BindView(R.id.btn_balance) Button btnAccountBalance;
     @BindView(R.id.btn_transaction) Button btnTransaction;
+    @BindView(R.id.txt_syncing) TextView txtSyncing;
 
     @OnClick({ R.id.btn_report })
     public void clickReportButton(Button btn) {
@@ -100,20 +100,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        setTitle("Android In-Process Node");
-
         if (savedInstanceState == null) {
             ctx = new Context();
             if (initTestnetNode()) {
                 initKeyStore();
                 NodeInfo info = node.getNodeInfo();
-                txtVersion.setText("My name: " + info.getName() + "\n");
+                //txtVersion.setText("My name: " + info.getName() + "\n");
                 //            textbox.append("My address: " + info.getListenerAddress() + "\n");
                 //            textbox.append("My protocols: " + info.getProtocols() + "\n\n");
 
                 if (initEthereumNode()) {
                     subscribeToNewHead();
-                    displayLatestBlock();
                 } else {
                     finish();
                 }
@@ -150,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             node = Geth.newNode(getFilesDir() + "/.ethereum", nc);
             node.start();
+            updateSyncing();
             return true;
         } catch (Exception e) {
             Log.e("InitTestNet","Init of Testnet node failed: " + e.getMessage());
@@ -164,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("GetEthereumClient", "Failed to get the Ethereum client: " + e.getMessage());
             return false;
         }
+        updateSyncing();
         return true;
     }
 
@@ -176,11 +175,42 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void displayLatestBlock() {
-        try {
-            txtLatestBlock.setText("Latest block: " + ethereumClient.getBlockByNumber(ctx, -1).getNumber() + ", syncing...\n");
-        } catch (Exception e) {
-            Log.d("DisplayLatestBlock", "Could not display latest block: " + e.getMessage());
-        }
+    private void updateSyncing(){
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(1000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    SyncProgress progress = ethereumClient.syncProgress(ctx);
+                                    if (progress != null){
+                                        if (progress.getCurrentBlock() >= progress.getHighestBlock()) {
+                                            txtSyncing.setText(" up-to-date");
+                                            txtLatestBlock.setText("");
+                                        } else {
+                                            txtSyncing.setText(" syncing");
+                                            txtLatestBlock.setText("Latest block: " + progress.getCurrentBlock() + "\n");
+                                        }
+                                    } else {
+                                        txtSyncing.setText(" not syncing");
+                                        txtLatestBlock.setText("");
+                                    }
+                                } catch (Exception e) {
+                                    Log.e("Getting sync progress", "Could not get syncing progress. ", e);
+                                }
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    Log.e("Update Syncing", "Could not update Syncing. ", e);
+                }
+            }
+        };
+
+        thread.start();
     }
 }
