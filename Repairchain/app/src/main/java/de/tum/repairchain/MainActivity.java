@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+import de.tum.repairchain.contracts.Report_sol_Repairchain;
 import org.ethereum.geth.*;
 import android.util.Log;
 import android.widget.Toast;
@@ -17,6 +18,8 @@ import java.math.BigInteger;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import org.web3j.abi.datatypes.Utf8String;
+import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
@@ -121,8 +124,11 @@ public class MainActivity extends AppCompatActivity {
                 else if (connectionMethod == BlockchainConnector.WEB3J) {
                     final TransactionReceipt transactionReceipt;
                     try {
-                        transactionReceipt = Transfer.sendFundsAsync(
-                                web3jClient, web3jCredentials, "0x6f565CE03e99FdbCFe097e960961FB9C8Bed28b0", BigDecimal.valueOf(0.1), Convert.Unit.ETHER).get();
+                        Report_sol_Repairchain repairchain = Report_sol_Repairchain.load("0x9b68cf0752d280a9A163E3329590cEba92d2b472", web3jClient, web3jCredentials, new BigInteger("21"), new BigInteger("6725490"));
+                        Utf8String hash1 = repairchain.getPictureHash1(new Utf8String("minga"), new Uint256(0l)).get();
+                        transactionReceipt = repairchain.addReportToCity(new Utf8String("minga"), new Utf8String("0x666")).get();
+//                        transactionReceipt = Transfer.sendFundsAsync(
+//                                web3jClient, web3jCredentials, "0x6f565CE03e99FdbCFe097e960961FB9C8Bed28b0", BigDecimal.valueOf(0.1), Convert.Unit.ETHER).get();
                         if (transactionReceipt != null) {
                             Log.i(connectionMethod.toString() + " transaction", "Transaction with hash " + transactionReceipt.getTransactionHash() + " successful");
                             runOnUiThread(new Runnable() {
