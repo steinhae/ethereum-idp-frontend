@@ -25,14 +25,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Done" />
+            android:text="@string/done" />
 
         <Button
             android:id="@+id/btn_addFile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="add File" />
+            android:text="@string/take_photo" />
     </LinearLayout>
 
 </LinearLayout>

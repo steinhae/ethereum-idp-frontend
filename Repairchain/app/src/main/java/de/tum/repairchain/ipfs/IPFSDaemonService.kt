@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.support.v4.app.NotificationCompat
 import android.util.Log
-import de.tum.repairchain.R
 import de.tum.repairchain.UploadImage
 
 class IPFSDaemonService : IntentService("IPFSDaemonService") {
