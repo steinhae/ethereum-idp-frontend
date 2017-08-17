@@ -1,12 +1,24 @@
 package de.tum.repairchain;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.Toast;
 
+import de.tum.repairchain.ipfs.AddIPFSContent;
+import de.tum.repairchain.ipfs.InputStreamProvider;
+
+import java.io.File;
+import java.io.FileOutputStream;
+
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.tum.repairchain.ipfs.IPFSDaemon;
@@ -17,15 +29,22 @@ import io.ipfs.kotlin.model.BandWidthInfo;
 import io.ipfs.kotlin.model.VersionInfo;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
+import okio.Okio;
 
 public class UploadImage extends AppCompatActivity {
 
+    private final int PHOTO_REQUEST = 1;
+
     private IPFSDaemon ipfsDaemon = new IPFSDaemon(this);
     private boolean running = false;
+    private String hashString;
+
+    @BindView(R.id.btn_addFile) Button addFile;
 
     @OnClick ({R.id.btn_addFile})
     public void clickAddFileButton(Button btn) {
-
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, PHOTO_REQUEST);
     }
 
     @OnClick ({R.id.btn_done})
@@ -99,6 +118,43 @@ public class UploadImage extends AppCompatActivity {
         running = false;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PHOTO_REQUEST){
+            try {
+                File outputDir = getApplicationContext().getCacheDir();
+                File outputFile = File.createTempFile("tempImage", "png", outputDir);
+                FileOutputStream fos = new FileOutputStream(outputFile);
+                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                fos.close();
+
+                Intent addIpfsIntent = new Intent(getApplicationContext(), AddIPFSContent.class);
+                addIpfsIntent.setAction(Intent.ACTION_SEND);
+                addIpfsIntent.setData(android.net.Uri.parse(outputFile.toURI().toString()));
+                startActivity(addIpfsIntent);
+                /*
+                InputStreamProvider.fromURI(this, outputFile.toURI());
+                if (bitmap != null){
+                    Okio.source()
+                }*/
+            } catch (NullPointerException nPE) {
+                Toast.makeText(this, "No photo has been taken", Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                final AlertDialog errDialog = new AlertDialog.Builder(this).create();
+                errDialog.setTitle("Error!");
+                errDialog.setMessage("Error: \"" + e + "\" has occured!");
+                errDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        errDialog.cancel();
+                    }
+                });
+                errDialog.show();
+            }
+        }
+    }
+
     private void startInfoRefresh() {
         new Thread(new Runnable() {
             @Override
@@ -125,5 +181,9 @@ public class UploadImage extends AppCompatActivity {
                 }
             }
         }).start();
+    }
+
+    private String getSuccessURL(){
+        return "fs:/ipfs/" + hashString;
     }
 }
