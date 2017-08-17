@@ -5,4 +5,8 @@
     <string name="noImage">No image added</string>
     <string name="tv_time">time</string>
     <string name="submit">Submit</string>
+    <string name="new_report">Create Report</string>
+    <string name="wallet_balance">Get Balance</string>
+    <string name="wallet_transaction">Send Transaction</string>
+    <string name="welcome">Welcome to the Repairchain app </string>
 </resources>
