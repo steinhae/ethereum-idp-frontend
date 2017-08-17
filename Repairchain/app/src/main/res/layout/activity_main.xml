@@ -50,14 +50,12 @@
         android:id="@+id/btn_balance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:enabled="false"
         android:text="@string/wallet_balance" />
 
     <Button
         android:id="@+id/btn_transaction"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:enabled="false"
         android:text="@string/wallet_transaction" />
 
     <Button
