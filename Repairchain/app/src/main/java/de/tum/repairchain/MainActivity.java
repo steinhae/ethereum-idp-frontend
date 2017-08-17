@@ -10,54 +10,32 @@ import de.tum.repairchain.contracts.Report_sol_Repairchain;
 import org.ethereum.geth.*;
 import android.util.Log;
 import android.widget.Toast;
-
-import java.io.*;
-import java.math.BigDecimal;
 import java.math.BigInteger;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.crypto.Credentials;
-import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
-import org.web3j.protocol.Web3jFactory;
 import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthGasPrice;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.protocol.core.methods.response.Web3ClientVersion;
-import org.web3j.protocol.http.HttpService;
-import org.web3j.tx.Transfer;
-import org.web3j.utils.Convert;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String WEB3J_CONNECTION_URL = "http://192.168.1.7:8545";
-
-    private long lastUpdate = 0;
-    private EthereumClient ethereumClient;
     private Web3j web3jClient;
+
+    private BlockchainConnector connectionMethod;
+
+    private EthereumClient ethereumClient;
     private Context ctx;
     private Node node;
     private KeyStore gethKeystore;
     private Credentials web3jCredentials;
     private boolean firstHeader = false;
     private Account gethAccount;
-    private BlockchainConnector connectionMethod;
-
-    private String ethereumFolderPath;
-    private String keystorePath;
-
-    private String walletJson = "{\"address\":\"51979cae42dcd802d2a24ac2b3b13fd957198740\",\"crypto\":{\"cipher\":\"aes-128-ctr\",\"ciphertext\":\"2e59d155cfe99b927c5c900f2555a4f297ebc0fd189e7717671a47ed33be2dac\",\"cipherparams\":{\"iv\":\"5ac2035ad061d5b514a9a38311c3ac17\"},\"kdf\":\"scrypt\",\"kdfparams\":{\"dklen\":32,\"n\":1024,\"p\":2048,\"r\":8,\"salt\":\"a33af1489f1d97f44a69749a38a3c3193976cbbc4b273ce3b409a7f702defd2a\"},\"mac\":\"67445bfed9a56989914766ad611c30748a06864d9382baea881dabae50212cc7\"},\"id\":\"ec15c662-9a37-46d8-a786-7a6910a9da7b\",\"version\":3}\"";
-    private String walletFilename = "UTC--2017-06-16T16-55-03.383013788Z--51979cae42dcd802d2a24ac2b3b13fd957198740";
-    private String walletPassword = "penis";
-
-    public enum BlockchainConnector {
-        GETH,
-        WEB3J
-    };
 
     @BindView(R.id.txt_version) TextView txtVersion;
     @BindView(R.id.txt_latestblock) TextView txtLatestBlock;
@@ -93,9 +71,7 @@ public class MainActivity extends AppCompatActivity {
         if (etherBalance != 0) {
             Toast.makeText(getApplicationContext(), "Balance: " + String.valueOf(etherBalance), Toast.LENGTH_SHORT).show();
         }
-
         Toast.makeText(getApplicationContext(), "Balance: " + String.valueOf(etherBalance), Toast.LENGTH_SHORT).show();
-
     }
 
     @OnClick( { R.id.btn_transaction })
@@ -124,7 +100,8 @@ public class MainActivity extends AppCompatActivity {
                 else if (connectionMethod == BlockchainConnector.WEB3J) {
                     final TransactionReceipt transactionReceipt;
                     try {
-                        Report_sol_Repairchain repairchain = Report_sol_Repairchain.load("0x9b68cf0752d280a9A163E3329590cEba92d2b472", web3jClient, web3jCredentials, new BigInteger("21"), new BigInteger("6725490"));
+                        EthGasPrice gasPrice = web3jClient.ethGasPrice().sendAsync().get();
+                        Report_sol_Repairchain repairchain = Report_sol_Repairchain.load("0x9b68cf0752d280a9A163E3329590cEba92d2b472", web3jClient, web3jCredentials, gasPrice.getGasPrice(), new BigInteger("440000"));
                         Utf8String hash1 = repairchain.getPictureHash1(new Utf8String("minga"), new Uint256(0l)).get();
                         transactionReceipt = repairchain.addReportToCity(new Utf8String("minga"), new Utf8String("0x666")).get();
 //                        transactionReceipt = Transfer.sendFundsAsync(
@@ -152,182 +129,19 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-    NewHeadHandler handler = new NewHeadHandler() {
-        @Override public void onError(String error) { }
-        @Override public void onNewHead(final Header header) {
-            long now = System.currentTimeMillis();
-            if (now - lastUpdate >= 1000) {
-                MainActivity.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        if (!firstHeader) {
-                            firstHeader = true;
-                        }
-                        String txt = "#" + header.getNumber() + ": " + header.getHash().getHex().substring(0, 10) + "…\n";
-                        txtLatestBlock.setText(txt);
-                        Log.v("NewBlock", txt);
-                    }
-                });
-                lastUpdate = now;
-            }
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        ethereumFolderPath = getFilesDir() + "/.ethereum/";
-        keystorePath =  ethereumFolderPath + "keystore/";
-        connectionMethod = BlockchainConnector.WEB3J;
-
-        writeWalletFileToDisk();
-
-        if (savedInstanceState == null) {
-            if (connectionMethod == BlockchainConnector.WEB3J) {
-                initWeb3jConnection();
-            } else if (connectionMethod == BlockchainConnector.GETH) {
-                initGethConnection(savedInstanceState);
-            }
-            initKeystore();
-            btnAccountBalance.setEnabled(true);
-        } else {
-            Log.d("OnCreate", "Node already initialized.");
-        }
-    }
-
-    private void initWeb3jConnection() {
-        web3jClient = Web3jFactory.build(new HttpService(WEB3J_CONNECTION_URL));
-        Web3ClientVersion web3ClientVersion = null;
-
+        connectionMethod = BlockchainManager.getInstance().getConnectionMethod();
         try {
-            web3ClientVersion = web3jClient.web3ClientVersion().sendAsync().get();
-            String clientVersion = web3ClientVersion.getWeb3ClientVersion();
-            Log.i("Web3J connection", clientVersion.toString());
+            web3jClient = Web3jManager.getInstance().getWeb3jClient();
+            web3jCredentials = Web3jManager.getInstance().getCredentials();
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void initGethConnection(Bundle savedInstanceState) {
-        ctx = new Context();
-        if (initTestnetNode()) {
-            NodeInfo info = node.getNodeInfo();
-            txtVersion.setText("My name: " + info.getName() + "\n");
-            //            textbox.append("My address: " + info.getListenerAddress() + "\n");
-            //            textbox.append("My protocols: " + info.getProtocols() + "\n\n");
-
-            if (initEthereumNode()) {
-                subscribeToNewHead();
-            } else {
-                finish();
-            }
-        }
-    }
-
-    private void writeWalletFileToDisk() {
-        File keystoreDirectory = new File(keystorePath);
-        if (!keystoreDirectory.exists()) {
-            keystoreDirectory.mkdirs();
-        }
-
-        File walletFile = new File(keystorePath + walletFilename);
-        if (!walletFile.exists()) {
-            try {
-                walletFile.createNewFile();
-                try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                        new FileOutputStream(keystorePath + walletFilename), "utf-8"))) {
-                    writer.write(walletJson);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void initKeystore() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String accountAddress = "";
-                if (connectionMethod == BlockchainConnector.GETH) {
-                    gethKeystore = Geth.newKeyStore(keystorePath, 8, 16);
-                    try {
-                        gethAccount = gethKeystore.getAccounts().get(0);
-                        accountAddress = gethKeystore.getAccounts().toString();
-                    } catch (Exception e) {
-                        initKeystoreError(e, "");
-                        return;
-                    }
-                }
-                else if (connectionMethod == BlockchainConnector.WEB3J) {
-                    try {
-                        web3jCredentials = WalletUtils.loadCredentials(walletPassword, keystorePath + walletFilename);
-                        accountAddress = web3jCredentials.getAddress();
-                    } catch (Exception e) {
-                        initKeystoreError(e, "Web3j");
-                        return;
-                    }
-                }
-                initKeyStoreSuccessful(accountAddress, connectionMethod.toString());
-            }
-        }).start();
-    }
-
-    private void initKeyStoreSuccessful(String walletAdress, String connectionMethod) {
-        Log.d(connectionMethod + " keystore", "Wallet with address " + walletAdress + " loaded successfully");
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                btnTransaction.setEnabled(true);
-            }
-        });
-    }
-
-    private void initKeystoreError(Exception e, String connectionMethod) {
-        Log.e(connectionMethod + " keystore", "Error while initializing wallet/keystore.");
-        e.printStackTrace();
-    }
-
-    private boolean initTestnetNode() {
-        NodeConfig nc = new NodeConfig();
-        nc.setEthereumNetworkID(3);
-        nc.setWhisperEnabled(true);
-        nc.setEthereumEnabled(true);
-        String genesis = Geth.testnetGenesis();
-        nc.setEthereumGenesis(genesis);
-        try {
-            node = Geth.newNode(ethereumFolderPath, nc);
-            node.start();
-            updateSyncing();
-            return true;
-        } catch (Exception e) {
-            Log.e("InitTestNet","Init of Testnet node failed: " + e.getMessage());
-            return false;
-        }
-    }
-
-    private boolean initEthereumNode() {
-        try {
-            ethereumClient = node.getEthereumClient();
-        } catch (Exception e) {
-            Log.e("GetEthereumClient", "Failed to get the Ethereum client: " + e.getMessage());
-            return false;
-        }
-        updateSyncing();
-        return true;
-    }
-
-    private boolean subscribeToNewHead() {
-        try {
-            ethereumClient.subscribeNewHead(ctx, handler, 16);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
     }
 
     private void updateSyncing(){
