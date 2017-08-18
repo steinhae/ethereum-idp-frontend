@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -48,6 +49,8 @@ public class UploadImage extends AppCompatActivity {
     private boolean running = false;
     private String hashString;
     private File imageFile;
+    private Uri photoURI;
+    File outputDir = getApplicationContext().getCacheDir();
 
     @BindView(R.id.btn_addFile)
     Button addFile;
@@ -56,7 +59,14 @@ public class UploadImage extends AppCompatActivity {
 
     @OnClick ({R.id.btn_addFile})
     public void clickAddFileButton(Button btn) {
+        try {
+            imageFile = File.createTempFile("tempImage", "png", outputDir);
+            photoURI = Uri.fromFile(imageFile);
+        } catch (Exception e) {
+            Log.e("UploadImage", "file creation failed", e);
+        }
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
         startActivityForResult(cameraIntent, PHOTO_REQUEST);
     }
 
@@ -136,7 +146,6 @@ public class UploadImage extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i("UploadImage", "onactivityresult called");
-        File outputDir = getApplicationContext().getCacheDir();
         if (resultCode == RETURN_URL) {
             String fileUrl = data.getStringExtra(RETURN_IMAGE_URL);
             Log.i("UploadImage", "Successfully returned the image url: " + fileUrl);
@@ -146,31 +155,10 @@ public class UploadImage extends AppCompatActivity {
             setResult(IMAGE_ADDED, returnToReport);
             new DownloadImageTask(photoTaken).execute(fileUrl);
         } else if (requestCode == PHOTO_REQUEST){
-            try {
-                imageFile = File.createTempFile("tempImage", "png", outputDir);
-                FileOutputStream fos = new FileOutputStream(imageFile);
-                Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                fos.close();
                 Intent addIpfsIntent = new Intent(getApplicationContext(), AddIPFSContent.class);
                 addIpfsIntent.setAction(Intent.ACTION_SEND);
-                addIpfsIntent.setData(android.net.Uri.parse(imageFile.toURI().toString()));
+                addIpfsIntent.setData(photoURI);
                 startActivityForResult(addIpfsIntent, JUST_SOME_CODE);
-//                photoTaken.setImageBitmap(bitmap);
-            } catch (NullPointerException nPE) {
-                Toast.makeText(this, "No photo has been taken", Toast.LENGTH_LONG).show();
-            } catch (Exception e) {
-                final AlertDialog errDialog = new AlertDialog.Builder(this).create();
-                errDialog.setTitle("Error!");
-                errDialog.setMessage("Error: \"" + e + "\" has occured!");
-                errDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        errDialog.cancel();
-                    }
-                });
-                errDialog.show();
-            }
         }
     }
 
