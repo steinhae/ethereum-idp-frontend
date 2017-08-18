@@ -24,6 +24,7 @@ class IPFSDaemonService : IntentService("IPFSDaemonService") {
         val targetIntent = Intent(this, UploadImage::class.java)
         val pIntent = PendingIntent.getActivity(this, 0, targetIntent, 0)
         val builder = NotificationCompat.Builder(this).setOngoing(true)
+                .setSmallIcon(R.drawable.tum_logo)
                 .setContentTitle("IPFS Daemon")
                 .setContentText("The daemon is running")
                 .addAction(android.R.drawable.ic_menu_close_clear_cancel, "exit", pendingExit)

@@ -8,7 +8,7 @@
     tools:context="de.tum.repairchain.UploadImage">
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/img_photo_taken"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.5"
@@ -25,14 +25,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Done" />
+            android:text="@string/done" />
 
         <Button
             android:id="@+id/btn_addFile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="add File" />
+            android:text="@string/take_photo" />
     </LinearLayout>
 
 </LinearLayout>
