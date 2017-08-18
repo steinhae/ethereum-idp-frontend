@@ -24,6 +24,8 @@ import org.web3j.protocol.core.methods.response.EthGasPrice;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
+import static de.tum.repairchain.Constants.*;
+
 public class MainActivity extends AppCompatActivity {
 
     private Web3j web3jClient;
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     @OnClick({ R.id.btn_report })
     public void clickReportButton(ImageButton btn) {
         Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, JUST_SOME_CODE);
     }
 
     @OnClick({ R.id.btn_balance })
