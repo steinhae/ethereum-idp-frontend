@@ -14,6 +14,7 @@
         android:label="@string/app_name"
         android:screenOrientation="landscape"
         android:supportsRtl="true"
+        android:name=".ipfs.App"
         android:theme="@style/AppTheme">
         <service
             android:name="de.tum.repairchain.ipfs.IPFSDaemonService"
@@ -28,6 +29,7 @@
         </activity>
         <activity android:name=".ReportActivity" />
         <activity android:name=".UploadImage"/>
+        <activity android:name=".ipfs.AddIPFSContent"/>
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyC7te1BP_OeyzYkUP8jvCqSUJeZ34qFQmM" />

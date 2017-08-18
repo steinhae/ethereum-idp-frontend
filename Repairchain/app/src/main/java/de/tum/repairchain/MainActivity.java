@@ -32,6 +32,8 @@ import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
 
+import static de.tum.repairchain.Constants.*;
+
 public class MainActivity extends AppCompatActivity {
 
     public static final String WEB3J_CONNECTION_URL = "http://192.168.1.7:8545";
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     @OnClick({ R.id.btn_report })
     public void clickReportButton(Button btn) {
         Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, JUST_SOME_CODE);
     }
 
     @OnClick({ R.id.btn_balance })
