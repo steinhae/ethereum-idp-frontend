@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     tools:context="de.tum.repairchain.SplashScreenActivity"
-    android:background="@android:color/holo_blue_light"
+    android:background="#C0C0C0"
     android:gravity="center_horizontal">
 
     <LinearLayout

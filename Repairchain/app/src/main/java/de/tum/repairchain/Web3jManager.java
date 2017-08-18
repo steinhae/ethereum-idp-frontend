@@ -8,6 +8,8 @@ import org.web3j.protocol.Web3jFactory;
 import org.web3j.protocol.core.methods.response.Web3ClientVersion;
 import org.web3j.protocol.http.HttpService;
 
+import java.util.concurrent.TimeUnit;
+
 public class Web3jManager {
 
     private static Web3jManager instance = null;
@@ -65,7 +67,7 @@ public class Web3jManager {
                 web3jClient = Web3jFactory.build(new HttpService(url));
                 Web3ClientVersion web3ClientVersion = null;
                 try {
-                    web3ClientVersion = web3jClient.web3ClientVersion().sendAsync().get();
+                    web3ClientVersion = web3jClient.web3ClientVersion().sendAsync().get(5, TimeUnit.SECONDS);
                     String clientVersion = web3ClientVersion.getWeb3ClientVersion();
                     initialized = true;
                     listener.onInitSuccessful(clientVersion);
