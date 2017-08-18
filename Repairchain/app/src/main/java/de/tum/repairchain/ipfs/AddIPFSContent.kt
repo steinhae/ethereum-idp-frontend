@@ -18,6 +18,7 @@ class AddIPFSContent : HashTextAndBarcodeActivity() {
             if (intent.type != null && "text/plain" == intent.type) {
 //                handleSendText(intent) // Handle text being sent
             } else {
+                handleSendStream(intent)
 //                AddIPFSContentPermissionsDispatcher.handleSendStreamWithCheck(this, intent)
             }
         }
@@ -55,5 +56,5 @@ class AddIPFSContent : HashTextAndBarcodeActivity() {
     override fun getSuccessDisplayHTML()
             = "added <a href='${getSuccessURL()}'>${getSuccessURL()}</a>"
 
-    override fun getSuccessURL() = "fs:/ipfs/${addResult!!.Hash}"
+    override fun getSuccessURL() = "https://gateway.ipfs.io/ipfs/${addResult!!.Hash}"
 }

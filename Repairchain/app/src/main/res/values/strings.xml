@@ -11,4 +11,6 @@
     <string name="welcome">Welcome to the Repairchain app </string>
     <string name="take_photo">Take picture</string>
     <string name="done">Done</string>
+    <string name="choose_image">Choose Image</string>
+    <string name="image_added">Image added</string>
 </resources>
