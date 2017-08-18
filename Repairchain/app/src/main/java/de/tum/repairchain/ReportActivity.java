@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,8 +28,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.tum.repairchain.ipfs.*;
+
+import static de.tum.repairchain.Constants.*;
 
 public class ReportActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -37,17 +42,35 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
 
-    private MapView mapView;
     private GoogleMap map;
     private LocationManager locationManager;
     private LocationListener locationListener;
     private Location currentLocation;
-    private TextView tvTime;
+    private String imageURL = "";
+    private String time;
+
+    @BindView(R.id.txt_time)
+    TextView tvTime;
+    @BindView(R.id.mv_current_location)
+    MapView mapView;
+    @BindView(R.id.txt_image)
+    TextView tvImage;
+    @BindView(R.id.et_description)
+    EditText descriptionField;
 
     @OnClick({R.id.btn_upload})
     public void clickUploadButton(Button btn) {
         Intent intent = new Intent(getApplicationContext(), UploadImage.class);
-        startActivity(intent);
+        startActivityForResult(intent, JUST_SOME_CODE);
+    }
+
+    @OnClick({R.id.btn_submit_report})
+    public void submitReport(Button btn){
+        double latitude    = currentLocation.getLatitude();
+        double longitude   = currentLocation.getLongitude();
+        String description = descriptionField.getText().toString();
+        // imageURL
+        // time
     }
 
     @Override
@@ -107,9 +130,9 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
         setTitle("Create Report");
 
         ButterKnife.bind(this);
+
+        Log.i("ReportActivity", "activity has been opened");
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-        tvTime = (TextView) findViewById(R.id.txt_time);
-        mapView = (MapView) findViewById(R.id.mv_current_location);
         mapView.onCreate(savedInstanceState);
         // needed to initialize GoogleMap object
         mapView.getMapAsync(this);
@@ -118,7 +141,7 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-
+                currentLocation = location;
             }
 
             @Override
@@ -149,7 +172,18 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
             setMapPosition();
         }
 
-        tvTime.setText(dateFormat.format(new Date()));
+        time = dateFormat.format(new Date());
+        tvTime.setText(time);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.i("ReportActivity", "onActivityResult opened");
+        if (resultCode == IMAGE_ADDED) {
+            imageURL = data.getStringExtra(IPFS_UPLOAD_DONE);
+            Log.i("ReportActivity", "Added image: " + imageURL);
+            tvImage.setText(R.string.image_added);
+        }
     }
 
     @Override
