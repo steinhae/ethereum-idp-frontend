@@ -9,6 +9,8 @@
     <string name="wallet_balance">Get Balance</string>
     <string name="wallet_transaction">Send Transaction</string>
     <string name="welcome">Welcome to the Repairchain app </string>
+    <string name="btn_add_report_text">Add report</string>
+    <string name="btn_reports_text">Reports</string>
     <string name="take_photo">Take picture</string>
     <string name="done">Done</string>
     <string name="choose_image">Choose Image</string>
