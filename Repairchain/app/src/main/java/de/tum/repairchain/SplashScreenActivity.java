@@ -49,7 +49,12 @@ public class SplashScreenActivity extends Activity {
                 web3j.initKeystore(walletPassword, blockchainManager.getKeystorePath() + walletFilename, new Web3jManager.OnKeystoreInitListener() {
                     @Override
                     public void onKeystoreInitSuccessful(String walletAddress) {
-                        startActivity(new Intent(SplashScreenActivity.this, MainActivity.class));
+                        try {
+                            web3j.initRepairchain();
+                            startActivity(new Intent(SplashScreenActivity.this, MainActivity.class));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
