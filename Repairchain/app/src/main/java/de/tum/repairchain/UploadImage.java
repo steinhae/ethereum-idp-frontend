@@ -76,7 +76,6 @@ public class UploadImage extends AppCompatActivity {
     @OnClick ({R.id.btn_done})
     public void clickDoneButton(Button btn) {
         imageFile.delete();
-        outputDir.delete();
         finish();
     }
 
