@@ -1,7 +1,6 @@
 package de.tum.repairchain;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,23 +9,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import de.tum.repairchain.ipfs.AddIPFSContent;
-import de.tum.repairchain.ipfs.App;
-import de.tum.repairchain.ipfs.InputStreamProvider;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import butterknife.BindView;
@@ -40,9 +31,9 @@ import io.ipfs.kotlin.model.BandWidthInfo;
 import io.ipfs.kotlin.model.VersionInfo;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
-import okio.Okio;
 
 import static de.tum.repairchain.Constants.*;
+import static de.tum.repairchain.Helpers.getUrlFromHash;
 
 public class UploadImage extends AppCompatActivity {
 
@@ -62,12 +53,6 @@ public class UploadImage extends AppCompatActivity {
 
     @OnClick ({R.id.btn_addFile})
     public void clickAddFileButton(Button btn) {
-        try {
-            imageFile = File.createTempFile("tempImage", ".png", outputDir);
-            photoURI = Uri.fromFile(imageFile);
-        } catch (Exception e) {
-            Log.e("UploadImage", "file creation failed", e);
-        }
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
         startActivityForResult(cameraIntent, PHOTO_REQUEST);
@@ -101,6 +86,13 @@ public class UploadImage extends AppCompatActivity {
             if (!State.isDaemonRunning) {
                 startService();
             }
+        }
+
+        try {
+            imageFile = File.createTempFile("tempImage", ".png", outputDir);
+            photoURI = Uri.fromFile(imageFile);
+        } catch (Exception e) {
+            Log.e("UploadImage", "file creation failed", e);
         }
     }
 
@@ -152,14 +144,14 @@ public class UploadImage extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i("UploadImage", "onactivityresult called");
-        if (resultCode == RETURN_URL) {
-            String fileUrl = data.getStringExtra(RETURN_IMAGE_URL);
-            Log.i("UploadImage", "Successfully returned the image url: " + fileUrl);
+        if (resultCode == RETURN_IMAGE_HASH) {
+            String fileHash = data.getStringExtra(RETURN_IMAGE_URL);
+            Log.i("UploadImage", "Successfully returned the image url: " + fileHash);
             Intent returnToReport = new Intent();
             returnToReport.setAction(RETURN_HASH);
-            returnToReport.putExtra(IPFS_UPLOAD_DONE, fileUrl);
+            returnToReport.putExtra(IPFS_UPLOAD_DONE, fileHash);
             setResult(IMAGE_ADDED, returnToReport);
-            new DownloadImageTask(photoTaken).execute(fileUrl);
+            new DownloadImageTask(photoTaken).execute(fileHash);
         } else if (requestCode == PHOTO_REQUEST){
                 Intent addIpfsIntent = new Intent(getApplicationContext(), AddIPFSContent.class);
                 addIpfsIntent.setAction(Intent.ACTION_SEND);
@@ -217,7 +209,7 @@ public class UploadImage extends AppCompatActivity {
         protected Bitmap doInBackground (String... urls){
             Log.i("DownloadImageTask", "started working");
             Bitmap result = null;
-            String url = urls[0];
+            String url = getUrlFromHash(urls[0]);
             try {
                 InputStream in = new URL(url).openStream();
                 result = BitmapFactory.decodeStream(in);

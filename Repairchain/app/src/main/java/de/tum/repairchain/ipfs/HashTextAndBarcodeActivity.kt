@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import de.tum.repairchain.R
-import de.tum.repairchain.UploadImage
 import io.ipfs.kotlin.IPFS
 import io.ipfs.kotlin.model.NamedHash
 import kotlinx.android.synthetic.main.activity_add.*
@@ -91,12 +90,12 @@ abstract class HashTextAndBarcodeActivity : AppCompatActivity() {
                     hashInfoText.text = Html.fromHtml(displayString)
                 }
 
-                var successUrl = getSuccessURL()
+                var successUrl = getSuccessHash()
                 Log.i("just for assurance", successUrl)
                 var intent = Intent()
                 intent.action = RETURN_HASH
                 intent.putExtra(RETURN_IMAGE_URL, successUrl)
-                setResult(RETURN_URL, intent)
+                setResult(RETURN_IMAGE_HASH, intent)
                 finish()
 
             }
@@ -105,5 +104,5 @@ abstract class HashTextAndBarcodeActivity : AppCompatActivity() {
     }
 
     abstract fun getSuccessDisplayHTML(): String
-    abstract fun getSuccessURL(): String
+    abstract fun getSuccessHash(): String
 }

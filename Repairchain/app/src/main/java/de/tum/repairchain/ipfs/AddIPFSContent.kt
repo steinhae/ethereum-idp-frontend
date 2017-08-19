@@ -1,10 +1,8 @@
 package de.tum.repairchain.ipfs
 
-import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import io.ipfs.kotlin.IPFS
 import okio.Okio
 import java.io.File
 
@@ -54,7 +52,7 @@ class AddIPFSContent : HashTextAndBarcodeActivity() {
     }
 
     override fun getSuccessDisplayHTML()
-            = "added <a href='${getSuccessURL()}'>${getSuccessURL()}</a>"
+            = "added <a href='${getSuccessHash()}'>${getSuccessHash()}</a>"
 
-    override fun getSuccessURL() = "https://gateway.ipfs.io/ipfs/${addResult!!.Hash}"
+    override fun getSuccessHash() = addResult!!.Hash
 }
