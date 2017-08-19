@@ -49,9 +49,11 @@ public class UploadImage extends AppCompatActivity {
     private IPFSDaemon ipfsDaemon = new IPFSDaemon(this);
     private boolean running = false;
     private String hashString;
+    // Contains the actual image file
     private File imageFile;
     private Uri photoURI;
-    File outputDir;
+    // Contains the directory of the file. Don't know why it is a File type
+    private File outputDir;
 
     @BindView(R.id.btn_addFile)
     Button addFile;
@@ -73,6 +75,8 @@ public class UploadImage extends AppCompatActivity {
 
     @OnClick ({R.id.btn_done})
     public void clickDoneButton(Button btn) {
+        imageFile.delete();
+        outputDir.delete();
         finish();
     }
 
