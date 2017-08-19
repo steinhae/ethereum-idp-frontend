@@ -106,7 +106,7 @@ public class Web3jManager {
         if (isInitialized() && credentials != null) {
             try {
                 gasPrice = web3jClient.ethGasPrice().sendAsync().get();
-                repairchain = Report_sol_Repairchain.load("0x7E7891F8179E14a1761179c6fc973E3688BCfB17", web3jClient, credentials, gasPrice.getGasPrice(), new BigInteger("800000"));
+                repairchain = Report_sol_Repairchain.load(Constants.REPAIRCHAIN_ADDRESS, web3jClient, credentials, gasPrice.getGasPrice(), new BigInteger(Constants.REPAIRCHAIN_GAS_LIMIT));
             } catch (Exception e) {
                 Log.d(TAG, "Error while getting ETH gas price.");
                 e.printStackTrace();
