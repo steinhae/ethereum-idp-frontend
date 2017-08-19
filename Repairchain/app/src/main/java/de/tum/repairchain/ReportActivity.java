@@ -74,7 +74,7 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
     public void submitReport(Button btn){
         final double latitude    = currentLocation.getLatitude();
         final double longitude   = currentLocation.getLongitude();
-        String description = descriptionField.getText().toString();
+        final String description = descriptionField.getText().toString();
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Submitting report...");
@@ -91,7 +91,8 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
                             new Utf8String("minga"),
                             new Utf8String(imageURL),
                             new Utf8String(String.valueOf(longitude)),
-                            new Utf8String(String.valueOf(latitude))).get();
+                            new Utf8String(String.valueOf(latitude)),
+                            new Utf8String(description)).get();
                     if (transactionReceipt != null) {
                         runOnUiThread(new Runnable() {
                             @Override
