@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -50,7 +51,7 @@ public class UploadImage extends AppCompatActivity {
     private String hashString;
     private File imageFile;
     private Uri photoURI;
-    File outputDir = getApplicationContext().getCacheDir();
+    File outputDir;
 
     @BindView(R.id.btn_addFile)
     Button addFile;
@@ -60,7 +61,7 @@ public class UploadImage extends AppCompatActivity {
     @OnClick ({R.id.btn_addFile})
     public void clickAddFileButton(Button btn) {
         try {
-            imageFile = File.createTempFile("tempImage", "png", outputDir);
+            imageFile = File.createTempFile("tempImage", ".png", outputDir);
             photoURI = Uri.fromFile(imageFile);
         } catch (Exception e) {
             Log.e("UploadImage", "file creation failed", e);
@@ -80,6 +81,8 @@ public class UploadImage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_image);
         ButterKnife.bind(this);
+
+        outputDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
         Log.i("UploadImage", "activity has been called");
 
