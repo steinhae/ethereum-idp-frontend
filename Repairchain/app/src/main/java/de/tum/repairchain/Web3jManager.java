@@ -5,18 +5,27 @@ import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
+import org.web3j.protocol.core.methods.response.EthGasPrice;
 import org.web3j.protocol.core.methods.response.Web3ClientVersion;
 import org.web3j.protocol.http.HttpService;
 
+import java.math.BigInteger;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import de.tum.repairchain.contracts.Report_sol_Repairchain;
+
 public class Web3jManager {
+
+    private static final String TAG = Web3jManager.class.getSimpleName();
 
     private static Web3jManager instance = null;
 
     private Web3j web3jClient;
     private Credentials credentials;
     private boolean initialized;
+
+    private Report_sol_Repairchain repairchain;
 
     public interface OnInitListener {
         void onInitSuccessful(String clientVersion);
@@ -60,6 +69,10 @@ public class Web3jManager {
         return this.credentials;
     }
 
+    public Report_sol_Repairchain getRepairchain() {
+        return repairchain;
+    }
+
     private void initWeb3jConnection(final String url, final OnInitListener listener) {
         new Thread(new Runnable() {
             @Override
@@ -85,6 +98,21 @@ public class Web3jManager {
             listener.onKeystoreInitSuccessful(credentials.getAddress());
         } catch (Exception e) {
             listener.onKeystoreInitError(e);
+        }
+    }
+
+    public void initRepairchain() throws Exception {
+        EthGasPrice gasPrice = null;
+        if (isInitialized() && credentials != null) {
+            try {
+                gasPrice = web3jClient.ethGasPrice().sendAsync().get();
+                repairchain = Report_sol_Repairchain.load("0x7E7891F8179E14a1761179c6fc973E3688BCfB17", web3jClient, credentials, gasPrice.getGasPrice(), new BigInteger("800000"));
+            } catch (Exception e) {
+                Log.d(TAG, "Error while getting ETH gas price.");
+                e.printStackTrace();
+            }
+        } else {
+            throw new Exception("Web3j client or keystore not initialized.");
         }
     }
 }
