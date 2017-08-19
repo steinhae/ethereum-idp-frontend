@@ -15,4 +15,5 @@
     <string name="done">Done</string>
     <string name="choose_image">Choose Image</string>
     <string name="image_added">Image added</string>
+    <string name="title_activity_reports_map">Map</string>
 </resources>
