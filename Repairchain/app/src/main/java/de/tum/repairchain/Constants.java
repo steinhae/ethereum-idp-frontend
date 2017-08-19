@@ -13,6 +13,6 @@ public class Constants {
     public static final int IMAGE_ADDED = 42;
     public static final int JUST_SOME_CODE = 123;
 
-    public static final String REPAIRCHAIN_ADDRESS = "0x7E7891F8179E14a1761179c6fc973E3688BCfB17";
+    public static final String REPAIRCHAIN_ADDRESS = "0x02c2AAe4F99A478c338410dEa1c8aaf41Dc46456";
     public static final String REPAIRCHAIN_GAS_LIMIT = "800000";
 }
