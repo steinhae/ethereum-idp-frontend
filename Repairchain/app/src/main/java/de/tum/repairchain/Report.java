@@ -72,4 +72,28 @@ public class Report {
         }
 
     }
+
+    public String getPictureHash() {
+        return pictureHash;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public LatLng getLocation() {
+        return location;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
 }
