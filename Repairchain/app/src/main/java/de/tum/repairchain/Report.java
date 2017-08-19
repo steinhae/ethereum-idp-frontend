@@ -64,7 +64,7 @@ public class Report {
         }
 
         try{
-            Uint256 timestamp = repairchain.getTimetamp(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            Uint256 timestamp = repairchain.getTimestamp(new Utf8String(city), new Bytes20(id.getBytes())).get();
             creationDate = new Date(Long.parseLong(timestamp.toString()));
         } catch (Exception e) {
             Log.d(TAG, "Could not get Timestamp from Blockchain");
