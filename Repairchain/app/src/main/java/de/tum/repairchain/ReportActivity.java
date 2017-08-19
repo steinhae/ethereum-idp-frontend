@@ -1,11 +1,13 @@
 package de.tum.repairchain;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -28,9 +30,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
+import org.web3j.abi.datatypes.Utf8String;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.tum.repairchain.contracts.Report_sol_Repairchain;
 import de.tum.repairchain.ipfs.*;
 
 import static de.tum.repairchain.Constants.*;
@@ -66,11 +72,47 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
 
     @OnClick({R.id.btn_submit_report})
     public void submitReport(Button btn){
-        double latitude    = currentLocation.getLatitude();
-        double longitude   = currentLocation.getLongitude();
+        final double latitude    = currentLocation.getLatitude();
+        final double longitude   = currentLocation.getLongitude();
         String description = descriptionField.getText().toString();
-        // imageURL
-        // time
+
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Submitting report...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Report_sol_Repairchain repairchain = Web3jManager.getInstance().getRepairchain();
+
+                try {
+                    final TransactionReceipt transactionReceipt = repairchain.addReportToCity(
+                            new Utf8String("minga"),
+                            new Utf8String(imageURL),
+                            new Utf8String(String.valueOf(longitude)),
+                            new Utf8String(String.valueOf(latitude))).get();
+                    if (transactionReceipt != null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "Report submitted successfully, txHash = " + transactionReceipt.getTransactionHash(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Error while submitting report.", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                    e.printStackTrace();
+                } finally {
+                    progressDialog.dismiss();
+                }
+            }
+        }).start();
     }
 
     @Override
