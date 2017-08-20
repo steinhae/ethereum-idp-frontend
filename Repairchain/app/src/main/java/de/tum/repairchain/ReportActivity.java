@@ -66,7 +66,7 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
 
     @OnClick({R.id.btn_upload})
     public void clickUploadButton(Button btn) {
-        Intent intent = new Intent(getApplicationContext(), UploadImage.class);
+        Intent intent = new Intent(ReportActivity.this, UploadImage.class);
         startActivityForResult(intent, JUST_SOME_CODE);
     }
 
@@ -88,7 +88,7 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
 
                 try {
                     final TransactionReceipt transactionReceipt = repairchain.addReportToCity(
-                            new Utf8String("minga"),
+                            new Utf8String(CITY),
                             new Utf8String(imageURL),
                             new Utf8String(String.valueOf(longitude)),
                             new Utf8String(String.valueOf(latitude)),
@@ -202,7 +202,8 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
 
             }
         };
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding

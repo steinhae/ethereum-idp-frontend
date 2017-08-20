@@ -16,4 +16,8 @@
     <string name="choose_image">Choose Image</string>
     <string name="image_added">Image added</string>
     <string name="title_activity_reports_map">Map</string>
+    <string name="report">Report</string>
+    <string name="confirmations">Confirmations:</string>
+    <string name="confirm">Confirm</string>
+    <string name="fix">Fix</string>
 </resources>
