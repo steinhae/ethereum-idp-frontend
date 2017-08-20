@@ -34,9 +34,9 @@ public class Report {
     private Boolean fixedFlag;
     private Boolean enoughFixConfirmations;
     private String fixPictureHash;
-    private  Boolean enouoghConfirmationsFlag;
-    private Integer confirmationCount;
-    private Integer fixConfirmationCount;
+    private Boolean enouoghConfirmationsFlag;
+    private int confirmationCount;
+    private int fixConfirmationCount;
 
 
     public Report(String city, String id) {
