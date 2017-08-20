@@ -10,7 +10,6 @@ import org.web3j.abi.datatypes.generated.Bytes20;
 import org.web3j.abi.datatypes.generated.Uint256;
 
 import java.util.Date;
-import java.util.concurrent.ExecutionException;
 
 import de.tum.repairchain.contracts.Report_sol_Repairchain;
 
