@@ -33,7 +33,7 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 
 import static de.tum.repairchain.Constants.*;
-import static de.tum.repairchain.Helpers.getUrlFromHash;
+import static de.tum.repairchain.Helpers.*;
 
 public class UploadImage extends AppCompatActivity {
 
@@ -151,7 +151,7 @@ public class UploadImage extends AppCompatActivity {
             returnToReport.setAction(RETURN_HASH);
             returnToReport.putExtra(IPFS_UPLOAD_DONE, fileHash);
             setResult(IMAGE_ADDED, returnToReport);
-            new DownloadImageTask(photoTaken).execute(fileHash);
+            new DownloadImageTask(UploadImage.this, photoTaken).execute(fileHash);
         } else if (requestCode == PHOTO_REQUEST){
                 Intent addIpfsIntent = new Intent(getApplicationContext(), AddIPFSContent.class);
                 addIpfsIntent.setAction(Intent.ACTION_SEND);
@@ -186,55 +186,5 @@ public class UploadImage extends AppCompatActivity {
                 }
             }
         }).start();
-    }
-
-    private class DownloadImageTask extends AsyncTask<String, Integer, Bitmap> {
-        ImageView imageView;
-        ProgressDialog progressDialog;
-        public DownloadImageTask(ImageView imageView){
-            this.imageView = imageView;
-            progressDialog = new ProgressDialog(UploadImage.this);
-            progressDialog.setTitle("Downloading image");
-            progressDialog.setIndeterminate(true);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog.show();
-        }
-
-        @Override
-        protected Bitmap doInBackground (String... urls){
-            Log.i("DownloadImageTask", "started working");
-            Bitmap result = null;
-            String url = getUrlFromHash(urls[0]);
-            try {
-                InputStream in = new URL(url).openStream();
-                result = BitmapFactory.decodeStream(in);
-                in.close();
-            } catch (Exception e) {
-                Log.e("UploadImage", "Failed loading IPFS image. ", e);
-                e.printStackTrace();
-            }
-            Log.i("DownloadImageTask", "finished working");
-            return result;
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... progress) {
-            super.onProgressUpdate(progress);
-            progressDialog.setIndeterminate(false);
-            progressDialog.setMax(100);
-            progressDialog.setProgress(progress[0]);
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            progressDialog.dismiss();
-            Log.i("DownloadImageTask", "postExecute");
-            imageView.setImageBitmap(result);
-        }
     }
 }

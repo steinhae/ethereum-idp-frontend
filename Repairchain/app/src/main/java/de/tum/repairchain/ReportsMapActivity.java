@@ -2,6 +2,7 @@ package de.tum.repairchain;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -15,6 +16,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
@@ -23,14 +25,12 @@ import java.util.List;
 import static de.tum.repairchain.Constants.*;
 import static de.tum.repairchain.Helpers.getAllReportIdsFromCity;
 
-public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCallback {
+public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
     private GoogleMap mMap;
     private LocationManager locationManager;
     private LocationListener locationListener;
     private Location currentLocation;
-    // FixMe create function to fetch current city
-    private final String CITY = "minga";
     private List<Report> reportList;
 
 
@@ -66,6 +66,7 @@ public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCa
             }
         };
 
+        // FixMe create function to fetch current city
         List<String> reportIds = getAllReportIdsFromCity(CITY);
         reportList = new ArrayList<Report>();
 
@@ -100,12 +101,28 @@ public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCa
             mMap.setMyLocationEnabled(true);
         }
 
-        for(Report report : reportList){
-            mMap.addMarker(new MarkerOptions().position(report.getLocation())
-                    .title("Report")
-                    .snippet(report.getDescription()));
+        for (Report report : reportList) {
+            if (report.getFixedFlag()) {
+                if (!report.getEnoughFixConfirmations())
+                    mMap.addMarker(new MarkerOptions().position(report.getLocation())
+                            .title("Fix")
+                            .snippet(report.getDescription()))
+                            .setTag(report.getId());
+            } else {
+                if (!report.getEnouoghConfirmationsFlag())
+                    mMap.addMarker(new MarkerOptions().position(report.getLocation())
+                            .title("Report")
+                            .snippet(report.getDescription()))
+                            .setTag(report.getId());
+            }
         }
+    }
 
-
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        String reportId = marker.getTag().toString();
+        Intent showReport = new Intent(ReportsMapActivity.this, ShowReportActivity.class);
+        showReport.putExtra(REPORT_ID, reportId);
+        startActivity(showReport);
     }
 }
