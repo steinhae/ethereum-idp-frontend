@@ -21,7 +21,7 @@ import static de.tum.repairchain.Helpers.*;
 
 public class ShowReportActivity extends AppCompatActivity {
 
-    private String reportId;
+    private Bytes20 reportId;
     private Report report;
     private boolean isFix;
     private String imageHash;
@@ -44,7 +44,7 @@ public class ShowReportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_report);
         Bundle extras = getIntent().getExtras();
-        reportId = extras.get(REPORT_ID).toString();
+        reportId = (Bytes20)extras.get(REPORT_ID);
         report = new Report(CITY, reportId);
         isFix = report.getFixedFlag();
         imageHash = report.getPictureHash();
@@ -85,11 +85,11 @@ public class ShowReportActivity extends AppCompatActivity {
                     if (isFix)
                         transactionReceipt = repairchain.addFixConfirmationToReport(
                                 new Utf8String(CITY),
-                                new Bytes20(reportId.getBytes())).get();
+                                reportId).get();
                     else
                         transactionReceipt = repairchain.addConfirmationToReport(
                                 new Utf8String(CITY),
-                                new Bytes20(reportId.getBytes())).get();
+                                reportId).get();
                     if (transactionReceipt != null) {
                         runOnUiThread(new Runnable() {
                             @Override
