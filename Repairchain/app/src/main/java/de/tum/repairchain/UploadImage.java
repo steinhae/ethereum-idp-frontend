@@ -2,10 +2,7 @@ package de.tum.repairchain;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -17,8 +14,6 @@ import android.widget.ImageView;
 import de.tum.repairchain.ipfs.AddIPFSContent;
 
 import java.io.File;
-import java.io.InputStream;
-import java.net.URL;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

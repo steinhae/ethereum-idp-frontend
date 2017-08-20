@@ -53,10 +53,14 @@ public class ShowReportActivity extends AppCompatActivity {
         if (isFix) {
             reportTitle.setText(R.string.fix);
             reportConfirmations.setText(report.getFixConfirmationCount());
+            // actually a slightly redundant check because of this being fetched in the map activity
+            // but as they say: rather safe than sorry
             if (report.getEnoughFixConfirmations())
                 confirmButton.setEnabled(false);
         } else {
             reportConfirmations.setText(report.getConfirmationCount());
+            // actually a slightly redundant check because of this being fetched in the map activity
+            // but as they say: rather safe than sorry
             if (report.getEnouoghConfirmationsFlag())
                 confirmButton.setEnabled(false);
         }

@@ -7,20 +7,22 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.widget.Button;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.OnClick;
 
 import static de.tum.repairchain.Constants.*;
 import static de.tum.repairchain.Helpers.getAllReportIdsFromCity;
@@ -33,7 +35,6 @@ public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCa
     private Location currentLocation;
     private List<Report> reportList;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +43,8 @@ public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCa
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        FloatingActionButton newReport = new FloatingActionButton(this);
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
@@ -75,7 +78,11 @@ public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCa
             Report currentReport = new Report(CITY, reportId);
             reportList.add(currentReport);
         }
+    }
 
+    @OnClick({R.id.btn_add_report})
+    public void addNewReport(Button btn){
+        startActivity(new Intent(ReportsMapActivity.this, ReportActivity.class));
     }
 
 

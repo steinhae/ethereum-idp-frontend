@@ -7,7 +7,6 @@ import android.content.Intent;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.ExecutionException;
 
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -37,7 +36,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.tum.repairchain.contracts.Report_sol_Repairchain;
-import de.tum.repairchain.ipfs.*;
 
 import static de.tum.repairchain.Constants.*;
 
