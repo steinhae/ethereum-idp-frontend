@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import org.web3j.abi.datatypes.Bool;
 import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Bytes20;
 import org.web3j.abi.datatypes.generated.Uint256;
@@ -27,6 +28,16 @@ public class Report {
     private String city;
     private String id;
     private Date creationDate;
+
+
+
+    private Boolean fixedFlag;
+    private Boolean enoughFixConfirmations;
+    private String fixPictureHash;
+    private Boolean enouoghConfirmationsFlag;
+    private int confirmationCount;
+    private int fixConfirmationCount;
+
 
     public Report(String city, String id) {
         Report_sol_Repairchain repairchain = Web3jManager.getInstance().getRepairchain();
@@ -71,6 +82,56 @@ public class Report {
             e.printStackTrace();
         }
 
+        try {
+            Bool fixedReport = repairchain.getFixedReport(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            fixedFlag = fixedReport.getValue();
+        } catch (Exception e) {
+            Log.d(TAG, "Could not get Report Fixed Flag from Blockchain");
+            e.printStackTrace();
+        }
+
+        try {
+            Bool enoughFixes = repairchain.getEnoughFixConfirmations(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            enoughFixConfirmations = enoughFixes.getValue();
+        } catch (Exception e) {
+            Log.d(TAG, "Could not get Enough Fix Confirmation Flag from Blockchain");
+            e.printStackTrace();
+        }
+
+        try {
+            Utf8String fixPictureHash1 = repairchain.getFixedPictureHash1(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            Utf8String fixPictureHash2 = repairchain.getFixedPictureHash2(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            fixPictureHash = fixPictureHash1.toString() + fixPictureHash2.toString();
+        } catch (Exception e) {
+            Log.d(TAG, "Could not get Fix Picture Hash from Blockchain");
+            e.printStackTrace();
+        }
+
+        try {
+            Bool enoughConfirmations = repairchain.getEnoughConfirmations(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            enouoghConfirmationsFlag = enoughConfirmations.getValue();
+        } catch (Exception e) {
+            Log.d(TAG, "Could not get Enough Confirmation Flag from Blockchain");
+            e.printStackTrace();
+        }
+
+        try {
+            Uint256 confCount = repairchain.getConfirmationCount(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            confirmationCount = Integer.parseInt(confCount.toString());
+        } catch (Exception e) {
+            Log.d(TAG, "Could not get Confirmation Count from Blockchain");
+            e.printStackTrace();
+        }
+
+        try {
+            Uint256 fixConfCount = repairchain.getFixConfirmationCount(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            fixConfirmationCount = Integer.parseInt(fixConfCount.toString());
+        } catch (Exception e) {
+            Log.d(TAG, "Could not get fix Confirmation Count from Blockchain");
+            e.printStackTrace();
+        }
+
+
     }
 
     public String getPictureHash() {
@@ -95,5 +156,29 @@ public class Report {
 
     public Date getCreationDate() {
         return creationDate;
+    }
+
+    public Boolean getFixedFlag() {
+        return fixedFlag;
+    }
+
+    public Boolean getEnoughFixConfirmations() {
+        return enoughFixConfirmations;
+    }
+
+    public String getFixPictureHash() {
+        return fixPictureHash;
+    }
+
+    public Boolean getEnouoghConfirmationsFlag() {
+        return enouoghConfirmationsFlag;
+    }
+
+    public Integer getConfirmationCount() {
+        return confirmationCount;
+    }
+
+    public Integer getFixConfirmationCount() {
+        return fixConfirmationCount;
     }
 }
