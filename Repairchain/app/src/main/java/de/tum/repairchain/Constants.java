@@ -21,7 +21,6 @@ public class Constants {
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
 
-
-    public static final String REPAIRCHAIN_ADDRESS = "0xD2AFd17719B1a43397166623C9909434add56CF1";
+    public static final String REPAIRCHAIN_ADDRESS = "0x8674135D16dA9BA1e7C336F7b768161E6724260b";
     public static final String REPAIRCHAIN_GAS_LIMIT = "800000";
 }

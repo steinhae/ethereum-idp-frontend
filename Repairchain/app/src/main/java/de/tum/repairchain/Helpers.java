@@ -8,12 +8,14 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
 
+import org.web3j.abi.datatypes.DynamicArray;
 import org.web3j.abi.datatypes.StaticArray;
 import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Bytes20;
 import org.web3j.abi.datatypes.generated.Uint256;
 
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +48,7 @@ public class Helpers {
         List<String> resultList = new ArrayList<>();
         for(long i = 0; i <= loops; i++){
             try {
-                StaticArray<Bytes20> reportIds = repairchain.getReportIdsFromCity(new Utf8String(city), new Uint256(i)).get();
+                DynamicArray<Bytes20> reportIds = repairchain.getReportIdsFromCity(new Utf8String(city)).get();
                 for(Bytes20 item : reportIds.getValue()){
                     resultList.add(item.toString());
                 }
