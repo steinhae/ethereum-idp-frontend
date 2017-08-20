@@ -25,7 +25,7 @@ public class Report {
     private String description;
     private LatLng location;
     private String city;
-    private String id;
+    private Bytes20 id;
     private Date creationDate;
 
 
@@ -38,15 +38,15 @@ public class Report {
     private int fixConfirmationCount;
 
 
-    public Report(String city, String id) {
+    public Report(String city, Bytes20 id) {
         Report_sol_Repairchain repairchain = Web3jManager.getInstance().getRepairchain();
 
         this.city = city;
         this.id = id;
 
         try {
-            Utf8String pictureHash1 = repairchain.getPictureHash1(new Utf8String(city), new Bytes20(id.getBytes())).get();
-            Utf8String pictureHash2 = repairchain.getPictureHash2(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            Utf8String pictureHash1 = repairchain.getPictureHash1(new Utf8String(city), id).get();
+            Utf8String pictureHash2 = repairchain.getPictureHash2(new Utf8String(city), id).get();
             pictureHash = pictureHash1.toString() + pictureHash2.toString();
         } catch (Exception e) {
             Log.d(TAG, "Could not get Picture Hash from Blockchain");
@@ -54,10 +54,10 @@ public class Report {
         }
 
         try {
-            Utf8String desc1 = repairchain.getDescription1(new Utf8String(city), new Bytes20(id.getBytes())).get();
-            Utf8String desc2 = repairchain.getDescription2(new Utf8String(city), new Bytes20(id.getBytes())).get();
-            Utf8String desc3 = repairchain.getDescription3(new Utf8String(city), new Bytes20(id.getBytes())).get();
-            Utf8String desc4 = repairchain.getDescription4(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            Utf8String desc1 = repairchain.getDescription1(new Utf8String(city), id).get();
+            Utf8String desc2 = repairchain.getDescription2(new Utf8String(city), id).get();
+            Utf8String desc3 = repairchain.getDescription3(new Utf8String(city), id).get();
+            Utf8String desc4 = repairchain.getDescription4(new Utf8String(city), id).get();
             description = desc1.toString() + desc2.toString() + desc3.toString() + desc4.toString();
         } catch (Exception e) {
             Log.d(TAG, "Could not get Description from Blockchain");
@@ -65,8 +65,8 @@ public class Report {
         }
 
         try {
-            Utf8String latitude = repairchain.getLatitude(new Utf8String(city), new Bytes20(id.getBytes())).get();
-            Utf8String longitude = repairchain.getLongitude(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            Utf8String latitude = repairchain.getLatitude(new Utf8String(city), id).get();
+            Utf8String longitude = repairchain.getLongitude(new Utf8String(city), id).get();
             location = new LatLng(Double.parseDouble(latitude.toString()), Double.parseDouble(longitude.toString()));
         } catch (Exception e) {
             Log.d(TAG, "Could not get Location from Blockchain");
@@ -74,7 +74,7 @@ public class Report {
         }
 
         try{
-            Uint256 timestamp = repairchain.getTimestamp(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            Uint256 timestamp = repairchain.getTimestamp(new Utf8String(city), id).get();
             creationDate = new Date(Long.parseLong(timestamp.toString()));
         } catch (Exception e) {
             Log.d(TAG, "Could not get Timestamp from Blockchain");
@@ -82,7 +82,7 @@ public class Report {
         }
 
         try {
-            Bool fixedReport = repairchain.getFixedReport(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            Bool fixedReport = repairchain.getFixedReport(new Utf8String(city), id).get();
             fixedFlag = fixedReport.getValue();
         } catch (Exception e) {
             Log.d(TAG, "Could not get Report Fixed Flag from Blockchain");
@@ -90,7 +90,7 @@ public class Report {
         }
 
         try {
-            Bool enoughFixes = repairchain.getEnoughFixConfirmations(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            Bool enoughFixes = repairchain.getEnoughFixConfirmations(new Utf8String(city), id).get();
             enoughFixConfirmations = enoughFixes.getValue();
         } catch (Exception e) {
             Log.d(TAG, "Could not get Enough Fix Confirmation Flag from Blockchain");
@@ -98,8 +98,8 @@ public class Report {
         }
 
         try {
-            Utf8String fixPictureHash1 = repairchain.getFixedPictureHash1(new Utf8String(city), new Bytes20(id.getBytes())).get();
-            Utf8String fixPictureHash2 = repairchain.getFixedPictureHash2(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            Utf8String fixPictureHash1 = repairchain.getFixedPictureHash1(new Utf8String(city), id).get();
+            Utf8String fixPictureHash2 = repairchain.getFixedPictureHash2(new Utf8String(city), id).get();
             fixPictureHash = fixPictureHash1.toString() + fixPictureHash2.toString();
         } catch (Exception e) {
             Log.d(TAG, "Could not get Fix Picture Hash from Blockchain");
@@ -107,7 +107,7 @@ public class Report {
         }
 
         try {
-            Bool enoughConfirmations = repairchain.getEnoughConfirmations(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            Bool enoughConfirmations = repairchain.getEnoughConfirmations(new Utf8String(city), id).get();
             enouoghConfirmationsFlag = enoughConfirmations.getValue();
         } catch (Exception e) {
             Log.d(TAG, "Could not get Enough Confirmation Flag from Blockchain");
@@ -115,7 +115,7 @@ public class Report {
         }
 
         try {
-            Uint256 confCount = repairchain.getConfirmationCount(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            Uint256 confCount = repairchain.getConfirmationCount(new Utf8String(city), id).get();
             confirmationCount = Integer.parseInt(confCount.toString());
         } catch (Exception e) {
             Log.d(TAG, "Could not get Confirmation Count from Blockchain");
@@ -123,7 +123,7 @@ public class Report {
         }
 
         try {
-            Uint256 fixConfCount = repairchain.getFixConfirmationCount(new Utf8String(city), new Bytes20(id.getBytes())).get();
+            Uint256 fixConfCount = repairchain.getFixConfirmationCount(new Utf8String(city), id).get();
             fixConfirmationCount = Integer.parseInt(fixConfCount.toString());
         } catch (Exception e) {
             Log.d(TAG, "Could not get fix Confirmation Count from Blockchain");
@@ -149,7 +149,7 @@ public class Report {
         return city;
     }
 
-    public String getId() {
+    public Bytes20 getId() {
         return id;
     }
 

@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
 
+import org.spongycastle.util.encoders.Hex;
 import org.web3j.abi.datatypes.DynamicArray;
 import org.web3j.abi.datatypes.StaticArray;
 import org.web3j.abi.datatypes.Utf8String;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.tum.repairchain.contracts.Report_sol_Repairchain;
+import org.web3j.protocol.Web3j;
 
 /**
  * Created by palac on 19.08.2017.
@@ -34,7 +36,7 @@ public class Helpers {
         return "https://gateway.ipfs.io/ipfs/" + hash;
     }
 
-    public static List<String> getAllReportIdsFromCity(String city){
+    public static List<Bytes20> getAllReportIdsFromCity(String city){
         Report_sol_Repairchain repairchain = Web3jManager.getInstance().getRepairchain();
         int reportsLength = 0;
         try {
@@ -45,13 +47,11 @@ public class Helpers {
         }
 
         int loops = reportsLength/100;
-        List<String> resultList = new ArrayList<>();
+        List<Bytes20> resultList = new ArrayList<>();
         for(long i = 0; i <= loops; i++){
             try {
                 DynamicArray<Bytes20> reportIds = repairchain.getReportIdsFromCity(new Utf8String(city)).get();
-                for(Bytes20 item : reportIds.getValue()){
-                    resultList.add(item.toString());
-                }
+                resultList.addAll(reportIds.getValue());
             } catch (Exception e) {
                 Log.d(TAG, "Could not get Report Ids from Blockchain");
                 e.printStackTrace();

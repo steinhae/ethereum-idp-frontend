@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.OnClick;
+import org.web3j.abi.datatypes.generated.Bytes20;
 
 import static de.tum.repairchain.Constants.*;
 import static de.tum.repairchain.Helpers.getAllReportIdsFromCity;
@@ -70,11 +71,11 @@ public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCa
         };
 
         // FixMe create function to fetch current city
-        List<String> reportIds = getAllReportIdsFromCity(CITY);
+        List<Bytes20> reportIds = getAllReportIdsFromCity(CITY);
         reportList = new ArrayList<Report>();
 
         //FixMe well redundancy n shit
-        for (String reportId : reportIds) {
+        for (Bytes20 reportId : reportIds) {
             Report currentReport = new Report(CITY, reportId);
             reportList.add(currentReport);
         }
