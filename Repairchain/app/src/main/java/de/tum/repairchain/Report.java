@@ -9,6 +9,7 @@ import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Bytes20;
 import org.web3j.abi.datatypes.generated.Uint256;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 import de.tum.repairchain.contracts.Report_sol_Repairchain;
@@ -73,9 +74,9 @@ public class Report {
             e.printStackTrace();
         }
 
-        try{
+        try {
             Uint256 timestamp = repairchain.getTimestamp(new Utf8String(city), id).get();
-            creationDate = new Date(Long.parseLong(timestamp.toString()));
+            creationDate = new Date(timestamp.getValue().longValue());
         } catch (Exception e) {
             Log.d(TAG, "Could not get Timestamp from Blockchain");
             e.printStackTrace();
