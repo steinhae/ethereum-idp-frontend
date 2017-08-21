@@ -1,6 +1,7 @@
 package de.tum.repairchain;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,6 +14,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.widget.Button;
 
+import android.widget.ProgressBar;
 import butterknife.ButterKnife;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -73,16 +75,6 @@ public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCa
 
             }
         };
-
-        // FixMe create function to fetch current city
-        List<Bytes20> reportIds = getAllReportIdsFromCity(CITY);
-        reportList = new ArrayList<Report>();
-
-        //FixMe well redundancy n shit
-        for (Bytes20 reportId : reportIds) {
-            Report currentReport = new Report(CITY, reportId);
-            reportList.add(currentReport);
-        }
     }
 
     @OnClick({R.id.btn_add_report})
@@ -113,23 +105,48 @@ public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCa
             mMap.setMyLocationEnabled(true);
         }
 
-        for (Report report : reportList) {
-            if (report.getFixedFlag()) {
-                if (!report.getEnoughFixConfirmations())
-                    mMap.addMarker(new MarkerOptions().position(report.getLocation())
-                            .title("Fix")
-                            .snippet(report.getDescription()))
-                            .setTag(report.getId());
-            } else {
-                if (!report.getEnouoghConfirmationsFlag())
-                    mMap.addMarker(new MarkerOptions().position(report.getLocation())
-                            .title("Report")
-                            .snippet(report.getDescription()))
-                            .setTag(report.getId());
-            }
-        }
-
         mMap.setOnInfoWindowClickListener(this);
+
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading reports...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // FixMe create function to fetch current city
+                List<Bytes20> reportIds = getAllReportIdsFromCity(CITY);
+                reportList = new ArrayList<Report>();
+
+                //FixMe well redundancy n shit
+                for (Bytes20 reportId : reportIds) {
+                    Report currentReport = new Report(CITY, reportId);
+                    reportList.add(currentReport);
+                }
+
+                for (final Report report : reportList) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (report.getFixedFlag()) {
+                                if (!report.getEnoughFixConfirmations())
+                                    mMap.addMarker(new MarkerOptions().position(report.getLocation())
+                                            .title("Fix")
+                                            .snippet(report.getDescription()))
+                                            .setTag(report.getId());
+                            } else {
+                                if (!report.getEnouoghConfirmationsFlag())
+                                    mMap.addMarker(new MarkerOptions().position(report.getLocation())
+                                            .title("Report")
+                                            .snippet(report.getDescription()))
+                                            .setTag(report.getId());
+                            }
+                        }
+                    });
+                }
+                progressDialog.dismiss();
+            }
+        }).start();
     }
 
     @Override
