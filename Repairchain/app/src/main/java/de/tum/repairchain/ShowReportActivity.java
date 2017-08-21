@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import butterknife.ButterKnife;
 import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Bytes20;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -43,6 +44,7 @@ public class ShowReportActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_report);
+        ButterKnife.bind(this);
         Bundle extras = getIntent().getExtras();
         reportId = new Bytes20((byte[])extras.get(REPORT_ID));
         report = new Report(CITY, reportId);
@@ -52,13 +54,13 @@ public class ShowReportActivity extends AppCompatActivity {
         reportDescription.setText(report.getDescription());
         if (isFix) {
             reportTitle.setText(R.string.fix);
-            reportConfirmations.setText(report.getFixConfirmationCount());
+            reportConfirmations.setText(report.getFixConfirmationCount().toString());
             // actually a slightly redundant check because of this being fetched in the map activity
             // but as they say: rather safe than sorry
             if (report.getEnoughFixConfirmations())
                 confirmButton.setEnabled(false);
         } else {
-            reportConfirmations.setText(report.getConfirmationCount());
+            reportConfirmations.setText(report.getConfirmationCount().toString());
             // actually a slightly redundant check because of this being fetched in the map activity
             // but as they say: rather safe than sorry
             if (report.getEnouoghConfirmationsFlag())
