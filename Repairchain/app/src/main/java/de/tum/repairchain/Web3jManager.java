@@ -1,7 +1,10 @@
 package de.tum.repairchain;
 
+import android.content.Context;
 import android.util.Log;
+import com.google.gson.Gson;
 import org.web3j.crypto.Credentials;
+import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
@@ -9,6 +12,10 @@ import org.web3j.protocol.core.methods.response.EthGasPrice;
 import org.web3j.protocol.core.methods.response.Web3ClientVersion;
 import org.web3j.protocol.http.HttpService;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -92,9 +99,48 @@ public class Web3jManager {
         }).start();
     }
 
-    public void initKeystore(String walletPassword, String filepath, final OnKeystoreInitListener listener) {
+    public void saveCredentials(Credentials cred, Context ctx) {
+        Gson gson = new Gson();
+        String credentialsSerialized = gson.toJson(cred);
+        saveCredentials(credentialsSerialized, ctx);
+    }
+
+    public void saveCredentials(String credentialsSerialized, Context ctx) {
+        FileOutputStream fos = null;
         try {
-            credentials = WalletUtils.loadCredentials(walletPassword, filepath);
+            fos = ctx.openFileOutput("credentials", Context.MODE_PRIVATE);
+            fos.write(credentialsSerialized.getBytes());
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Credentials loadCredentials(Context ctx) {
+        FileInputStream fis = null;
+        StringBuilder cred = new StringBuilder();
+        try {
+            fis = ctx.openFileInput("credentials");
+            int c;
+            while ((c = fis.read()) != -1) {
+                cred.append(Character.toString((char)c));
+
+            }
+            fis.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Gson gson = new Gson();
+        return  gson.fromJson(cred.toString(), Credentials.class);
+    }
+
+    public void initKeystore(String walletPassword, String filepath, Context ctx, final OnKeystoreInitListener listener) {
+        try {
+            credentials = loadCredentials(ctx);
+            if (credentials == null) {
+                credentials = WalletUtils.loadCredentials(walletPassword, filepath);
+                saveCredentials(credentials, ctx);
+            }
             listener.onKeystoreInitSuccessful(credentials.getAddress());
         } catch (Exception e) {
             listener.onKeystoreInitError(e);
