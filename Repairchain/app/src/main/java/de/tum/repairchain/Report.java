@@ -117,7 +117,7 @@ public class Report {
 
         try {
             Uint256 confCount = repairchain.getConfirmationCount(new Utf8String(city), id).get();
-            confirmationCount = Integer.parseInt(confCount.toString());
+            confirmationCount = confCount.getValue().intValue();
         } catch (Exception e) {
             Log.d(TAG, "Could not get Confirmation Count from Blockchain");
             e.printStackTrace();
@@ -125,7 +125,7 @@ public class Report {
 
         try {
             Uint256 fixConfCount = repairchain.getFixConfirmationCount(new Utf8String(city), id).get();
-            fixConfirmationCount = Integer.parseInt(fixConfCount.toString());
+            fixConfirmationCount = fixConfCount.getValue().intValue();
         } catch (Exception e) {
             Log.d(TAG, "Could not get fix Confirmation Count from Blockchain");
             e.printStackTrace();

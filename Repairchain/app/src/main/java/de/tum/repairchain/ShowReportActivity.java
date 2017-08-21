@@ -110,9 +110,9 @@ public class ShowReportActivity extends AppCompatActivity {
                     e.printStackTrace();
                 } finally {
                     progressDialog.dismiss();
+                    finish();
                 }
             }
         }).start();
-        finish();
     }
 }
