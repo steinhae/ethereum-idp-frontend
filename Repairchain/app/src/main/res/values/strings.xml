@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">Repairchain</string>
-    <string name="description">Description</string>
+    <string name="description">Description:</string>
     <string name="upload">Upload image</string>
     <string name="noImage">No image added</string>
-    <string name="tv_time">time</string>
+    <string name="tv_time">Creation Time:</string>
     <string name="submit">Submit</string>
     <string name="new_report">Create Report</string>
     <string name="wallet_balance">Get Balance</string>
@@ -20,4 +20,6 @@
     <string name="confirmations">Confirmations:</string>
     <string name="confirm">Confirm</string>
     <string name="fix">Fix</string>
+    <string name="image">Image:</string>
+
 </resources>
