@@ -44,7 +44,7 @@ public class ShowReportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_report);
         Bundle extras = getIntent().getExtras();
-        reportId = (Bytes20)extras.get(REPORT_ID);
+        reportId = new Bytes20((byte[])extras.get(REPORT_ID));
         report = new Report(CITY, reportId);
         isFix = report.getFixedFlag();
         imageHash = report.getPictureHash();
