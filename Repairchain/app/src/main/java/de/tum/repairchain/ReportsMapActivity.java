@@ -78,7 +78,7 @@ public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCa
     }
 
     @OnClick({R.id.btn_add_report})
-    public void addNewReport(Button btn){
+    public void addNewReport(FloatingActionButton btn){
         startActivity(new Intent(ReportsMapActivity.this, ReportActivity.class));
     }
 
