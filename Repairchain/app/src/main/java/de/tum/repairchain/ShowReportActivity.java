@@ -13,6 +13,8 @@ import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Bytes20;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
+import java.util.Date;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 import de.tum.repairchain.contracts.Report_sol_Repairchain;
@@ -24,7 +26,11 @@ public class ShowReportActivity extends AppCompatActivity {
 
     private Bytes20 reportId;
     private Report report;
+    private String description;
+    private String confirmations;
+    private boolean enoughConfirmations;
     private boolean isFix;
+    private Date timeStamp;
     private String imageHash;
 
     @BindView(R.id.txt_report_title)
@@ -47,28 +53,64 @@ public class ShowReportActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Bundle extras = getIntent().getExtras();
         reportId = new Bytes20((byte[])extras.get(REPORT_ID));
-        report = new Report(CITY, reportId);
-        isFix = report.getFixedFlag();
-        imageHash = report.getPictureHash();
 
-        reportDescription.setText(report.getDescription());
-        if (isFix) {
-            reportTitle.setText(R.string.fix);
-            reportConfirmations.setText(report.getFixConfirmationCount().toString());
-            // actually a slightly redundant check because of this being fetched in the map activity
-            // but as they say: rather safe than sorry
-            if (report.getEnoughFixConfirmations())
-                confirmButton.setEnabled(false);
-        } else {
-            reportConfirmations.setText(report.getConfirmationCount().toString());
-            // actually a slightly redundant check because of this being fetched in the map activity
-            // but as they say: rather safe than sorry
-            if (report.getEnouoghConfirmationsFlag())
-                confirmButton.setEnabled(false);
-        }
-        reportTime.setText(report.getCreationDate().toString());
+        final ProgressDialog progressDialog = new ProgressDialog(ShowReportActivity.this);
+        progressDialog.setMessage("Loading report/fix...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
 
-        new DownloadImageTask(ShowReportActivity.this, reportPhoto).execute(imageHash);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                report = new Report(CITY, reportId);
+                isFix = report.getFixedFlag();
+                imageHash = report.getPictureHash();
+                description = report.getDescription();
+                if (isFix) {
+                    confirmations = report.getFixConfirmationCount().toString();
+                    enoughConfirmations = report.getEnoughFixConfirmations();
+                } else {
+                    confirmations = report.getConfirmationCount().toString();
+                    enoughConfirmations = report.getEnouoghConfirmationsFlag();
+                }
+                timeStamp = report.getCreationDate();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        reportDescription.setText(report.getDescription());
+                        if (isFix)
+                            reportTitle.setText(R.string.fix);
+                        reportConfirmations.setText(confirmations);
+                        confirmButton.setEnabled(!enoughConfirmations);
+                        reportTime.setText(timeStamp.toString());
+                        new DownloadImageTask(ShowReportActivity.this, reportPhoto).execute(imageHash);
+                    }
+                });
+                /*
+                reportDescription.setText(report.getDescription());
+                if (isFix) {
+                    reportTitle.setText(R.string.fix);
+                    reportConfirmations.setText(report.getFixConfirmationCount().toString());
+                    // actually a slightly redundant check because of this being fetched in the map activity
+                    // but as they say: rather safe than sorry
+                    if (report.getEnoughFixConfirmations())
+                        confirmButton.setEnabled(false);
+                } else {
+                    reportConfirmations.setText(report.getConfirmationCount().toString());
+                    // actually a slightly redundant check because of this being fetched in the map activity
+                    // but as they say: rather safe than sorry
+                    if (report.getEnouoghConfirmationsFlag())
+                        confirmButton.setEnabled(false);
+                }
+                reportTime.setText(report.getCreationDate().toString());
+
+                new DownloadImageTask(ShowReportActivity.this, reportPhoto).execute(imageHash);
+                */
+                progressDialog.dismiss();
+            }
+        }).start();
+
     }
 
     @OnClick({R.id.btn_confirm})

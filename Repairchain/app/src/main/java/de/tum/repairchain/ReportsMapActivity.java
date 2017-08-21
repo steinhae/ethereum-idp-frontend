@@ -16,9 +16,13 @@ import android.widget.Button;
 
 import android.widget.ProgressBar;
 import butterknife.ButterKnife;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -103,6 +107,11 @@ public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCa
             locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
             currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             mMap.setMyLocationEnabled(true);
+            CameraPosition position = new CameraPosition.Builder()
+                    .target(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
+                    .zoom(15)
+                    .build();
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(position));
         }
 
         mMap.setOnInfoWindowClickListener(this);
