@@ -38,24 +38,13 @@ public class Helpers {
 
     public static List<Bytes20> getAllReportIdsFromCity(String city){
         Report_sol_Repairchain repairchain = Web3jManager.getInstance().getRepairchain();
-        int reportsLength = 0;
-        try {
-            reportsLength = Integer.parseInt((repairchain.getReportsLengthOfCity(new Utf8String(city)).get()).toString());
-        } catch (Exception e) {
-            Log.d(TAG, "Could not get Number of Reports from Blockchain");
-            e.printStackTrace();
-        }
-
-        int loops = reportsLength/100;
         List<Bytes20> resultList = new ArrayList<>();
-        for(long i = 0; i <= loops; i++){
-            try {
-                DynamicArray<Bytes20> reportIds = repairchain.getReportIdsFromCity(new Utf8String(city)).get();
-                resultList.addAll(reportIds.getValue());
-            } catch (Exception e) {
-                Log.d(TAG, "Could not get Report Ids from Blockchain");
-                e.printStackTrace();
-            }
+        try {
+            DynamicArray<Bytes20> reportIds = repairchain.getReportIdsFromCity(new Utf8String(city)).get();
+            resultList.addAll(reportIds.getValue());
+        } catch (Exception e) {
+            Log.d(TAG, "Could not get Report Ids from Blockchain");
+            e.printStackTrace();
         }
         return resultList;
     }
