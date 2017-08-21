@@ -32,10 +32,10 @@
         <activity android:name=".ReportActivity" />
         <activity android:name=".UploadImage" />
         <activity android:name=".ipfs.AddIPFSContent" />
-
-        <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyC7te1BP_OeyzYkUP8jvCqSUJeZ34qFQmM" />
+        <activity
+            android:name=".ReportsMapActivity"
+            android:label="@string/title_activity_reports_map" />
+        <activity android:name=".ShowReportActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -47,10 +47,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
-        <activity
-            android:name=".ReportsMapActivity"
-            android:label="@string/title_activity_reports_map"></activity>
     </application>
 
 </manifest>
