@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.widget.Button;
 
+import butterknife.ButterKnife;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -40,6 +41,9 @@ public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reports_map);
+
+        ButterKnife.bind(this);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -124,13 +128,15 @@ public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCa
                             .setTag(report.getId());
             }
         }
+
+        mMap.setOnInfoWindowClickListener(this);
     }
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        String reportId = marker.getTag().toString();
+        Bytes20 reportId = (Bytes20)marker.getTag();
         Intent showReport = new Intent(ReportsMapActivity.this, ShowReportActivity.class);
-        showReport.putExtra(REPORT_ID, reportId);
+        showReport.putExtra(REPORT_ID, reportId.getValue());
         startActivity(showReport);
     }
 }
