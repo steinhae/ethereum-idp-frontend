@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#C0C0C0"
     tools:context="de.tum.repairchain.ShowReportActivity">
 
     <ScrollView
@@ -14,6 +15,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
             android:orientation="vertical">
 
             <TextView
@@ -21,32 +24,67 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:textStyle="bold"
                 android:text="@string/report"
                 android:textAppearance="@android:style/TextAppearance.Material.Large" />
 
             <TextView
+                android:id="@+id/txt_report_description_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/description"
+                android:textAppearance="@android:style/TextAppearance.Material.Notification.Title"
+                android:textStyle="bold"/>
+
+            <TextView
                 android:id="@+id/txt_report_description"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/txt_report_image_header"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/description" />
+                android:text="@string/image"
+                android:textAppearance="@android:style/TextAppearance.Material.Notification.Title"
+                android:textStyle="bold"/>
 
             <ImageView
                 android:id="@+id/img_photo_taken"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:padding="10dp"
                 app:srcCompat="@drawable/pls_wait" />
+
+            <TextView
+                android:id="@+id/txt_confirmations_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/confirmations"
+                android:textAppearance="@android:style/TextAppearance.Material.Notification.Title"
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/txt_confirmations"
                 android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/txt_time_header"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/confirmations" />
+                android:text="@string/tv_time"
+                android:textAppearance="@android:style/TextAppearance.Material.Notification.Title"
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/txt_time"
                 android:layout_width="match_parent"
-                android:layout_height="65dp"
-                android:text="@string/tv_time" />
+                android:layout_height="40dp"
+                android:text="" />
 
             <Button
                 android:id="@+id/btn_confirm"
