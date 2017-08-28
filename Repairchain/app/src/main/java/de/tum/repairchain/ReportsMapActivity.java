@@ -12,9 +12,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.widget.Button;
 
-import android.widget.ProgressBar;
 import butterknife.ButterKnife;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -33,10 +31,10 @@ import butterknife.OnClick;
 import org.web3j.abi.datatypes.generated.Bytes20;
 
 import static de.tum.repairchain.Constants.*;
-import static de.tum.repairchain.Helpers.getAllReportIdsFromCity;
+import static de.tum.repairchain.Helpers.*;
 
 public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
-
+    private Context context;
     private GoogleMap mMap;
     private LocationManager locationManager;
     private LocationListener locationListener;
@@ -49,6 +47,8 @@ public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCa
         setContentView(R.layout.activity_reports_map);
 
         ButterKnife.bind(this);
+
+        context = getApplicationContext();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -105,13 +105,16 @@ public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCa
             ActivityCompat.requestPermissions(this, LOCATION_PERMISSIONS, 1);
         } else {
             locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
-            currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            currentLocation = getLastKnownLocation(context, ReportsMapActivity.this, locationManager);
             mMap.setMyLocationEnabled(true);
-            CameraPosition position = new CameraPosition.Builder()
-                    .target(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
-                    .zoom(15)
-                    .build();
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(position));
+            // != null being caught to avoid a crash
+            if (currentLocation != null) {
+                CameraPosition position = new CameraPosition.Builder()
+                        .target(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
+                        .zoom(15)
+                        .build();
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(position));
+            }
         }
 
         mMap.setOnInfoWindowClickListener(this);
