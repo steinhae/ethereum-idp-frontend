@@ -2,27 +2,25 @@ package de.tum.repairchain;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
 
-import org.spongycastle.util.encoders.Hex;
 import org.web3j.abi.datatypes.DynamicArray;
-import org.web3j.abi.datatypes.StaticArray;
 import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Bytes20;
-import org.web3j.abi.datatypes.generated.Uint256;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import de.tum.repairchain.contracts.Report_sol_Repairchain;
-import org.web3j.protocol.Web3j;
 
 /**
  * Created by palac on 19.08.2017.
@@ -31,6 +29,22 @@ import org.web3j.protocol.Web3j;
 public class Helpers {
 
     private static final String TAG = Helpers.class.getSimpleName();
+
+    public static String getConfigValue(Context context, String name) {
+        Resources resources = context.getResources();
+
+        try {
+            InputStream rawResource = resources.openRawResource(R.raw.local);
+            Properties properties = new Properties();
+            properties.load(rawResource);
+            return properties.getProperty(name);
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Unable to find the local file: " + e.getMessage());
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to open local file.");
+        }
+        return null;
+    }
 
     public static String getUrlFromHash(String hash){
         return "https://gateway.ipfs.io/ipfs/" + hash;
