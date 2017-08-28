@@ -38,14 +38,10 @@ import butterknife.OnClick;
 import de.tum.repairchain.contracts.Report_sol_Repairchain;
 
 import static de.tum.repairchain.Constants.*;
+import static de.tum.repairchain.Helpers.*;
 
 public class ReportActivity extends AppCompatActivity implements OnMapReadyCallback {
-
-    private static final String[] PERMISSIONS = {
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-    };
-
+    private Context context;
     private GoogleMap map;
     private LocationManager locationManager;
     private LocationListener locationListener;
@@ -69,9 +65,9 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     @OnClick({R.id.btn_submit_report})
-    public void submitReport(Button btn){
-        final double latitude    = currentLocation.getLatitude();
-        final double longitude   = currentLocation.getLongitude();
+    public void submitReport(Button btn) {
+        final double latitude = currentLocation.getLatitude();
+        final double longitude = currentLocation.getLongitude();
         final String description = descriptionField.getText().toString();
 
         final ProgressDialog progressDialog = new ProgressDialog(this);
@@ -129,20 +125,13 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     private void setMapPosition() {
-        Log.i("setMapPosition", "has been called");
         if (map != null) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                ActivityCompat.requestPermissions(this, PERMISSIONS, 1);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, LOCATION_PERMISSIONS, 1);
             } else {
                 locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, locationListener, null);
-                currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                currentLocation = getLastKnownLocation(context, ReportActivity.this, locationManager);
                 map.setMyLocationEnabled(true);
 
                 // Set camera to current location if it could be found
@@ -172,6 +161,7 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
 
         ButterKnife.bind(this);
 
+        context = getApplicationContext();
         Log.i("ReportActivity", "activity has been opened");
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         mapView.onCreate(savedInstanceState);
@@ -202,14 +192,7 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
         };
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            ActivityCompat.requestPermissions(this, PERMISSIONS, 1);
+            ActivityCompat.requestPermissions(this, LOCATION_PERMISSIONS, 1);
         } else {
             setMapPosition();
         }
@@ -245,7 +228,7 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
     @Override
     protected void onDestroy() {
         if (mapView != null) {
-            try{
+            try {
                 mapView.onDestroy();
             } catch (NullPointerException nPE) {
                 Log.e("ReportActivity", "Error when attempting MapView.onDestroy(), ignoring exception", nPE);
@@ -273,6 +256,4 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
         map = googleMap;
         setMapPosition();
     }
-
-
 }

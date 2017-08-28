@@ -1,11 +1,17 @@
 package de.tum.repairchain;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -21,6 +27,9 @@ import java.util.List;
 import java.util.Properties;
 
 import de.tum.repairchain.contracts.Report_sol_Repairchain;
+
+import static android.content.Context.LOCATION_SERVICE;
+import static de.tum.repairchain.Constants.LOCATION_PERMISSIONS;
 
 /**
  * Created by palac on 19.08.2017.
@@ -46,11 +55,11 @@ public class Helpers {
         return null;
     }
 
-    public static String getUrlFromHash(String hash){
+    public static String getUrlFromHash(String hash) {
         return "https://gateway.ipfs.io/ipfs/" + hash;
     }
 
-    public static List<Bytes20> getAllReportIdsFromCity(String city){
+    public static List<Bytes20> getAllReportIdsFromCity(String city) {
         Report_sol_Repairchain repairchain = Web3jManager.getInstance().getRepairchain();
         List<Bytes20> resultList = new ArrayList<>();
         try {
@@ -61,6 +70,27 @@ public class Helpers {
             e.printStackTrace();
         }
         return resultList;
+    }
+
+    public static Location getLastKnownLocation(Context context, Activity activity, LocationManager locationManager) {
+        locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
+        List<String> providers = locationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity, LOCATION_PERMISSIONS, 1);
+            }
+            Location l = locationManager.getLastKnownLocation(provider);
+                if (l == null) {
+                    continue;
+                }
+                if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                    // Found best last known location: %s", l);
+                    bestLocation = l;
+                }
+        }
+        return bestLocation;
     }
 
     public static class DownloadImageTask extends AsyncTask<String, Integer, Bitmap> {
