@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.ECKeyPair;
+import org.web3j.crypto.Wallet;
 import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.Web3jFactory;
@@ -134,13 +135,19 @@ public class Web3jManager {
         return  gson.fromJson(cred.toString(), Credentials.class);
     }
 
-    public void initKeystore(String walletPassword, String filepath, Context ctx, final OnKeystoreInitListener listener) {
+    public void initKeystoreWallet(String walletPassword, String filepath, final OnKeystoreInitListener listener) {
         try {
-            credentials = loadCredentials(ctx);
-            if (credentials == null) {
-                credentials = WalletUtils.loadCredentials(walletPassword, filepath);
-                saveCredentials(credentials, ctx);
-            }
+            credentials = WalletUtils.loadCredentials(walletPassword, filepath);
+            listener.onKeystoreInitSuccessful(credentials.getAddress());
+        } catch (Exception e) {
+            listener.onKeystoreInitError(e);
+        }
+    }
+
+    public void initKeystoreJson(String credentialsJson, final OnKeystoreInitListener listener) {
+        try {
+            Gson gson = new Gson();
+            credentials = gson.fromJson(credentialsJson, Credentials.class);
             listener.onKeystoreInitSuccessful(credentials.getAddress());
         } catch (Exception e) {
             listener.onKeystoreInitError(e);

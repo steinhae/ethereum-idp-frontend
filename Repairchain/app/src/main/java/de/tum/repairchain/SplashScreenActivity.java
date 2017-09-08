@@ -24,35 +24,27 @@ public class SplashScreenActivity extends Activity {
 
     private static final String TAG = SplashScreenActivity.class.getSimpleName();
 
-    private String web3jConnectionUrl;
-    private String walletFilename = "NOT NEEDED IF CREDENTIALS ARE SET";
-    private String walletPassword = "NOT NEEDED IF CREDENTIALS ARE SET";
-    private String credentialsJson;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
         ButterKnife.bind(this);
 
-        credentialsJson = Helpers.getConfigValue(this, "credentials_json");
-        web3jConnectionUrl = Helpers.getConfigValue(this, "web3j_connection_url");
+        final String credentialsJson = Helpers.getConfigValue(this, "credentials_json");
+        final String web3jConnectionUrl = Helpers.getConfigValue(this, "web3j_connection_url");
 
         loader.setIndeterminate(true);
         loader.getIndeterminateDrawable().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
 
         final Context ctx = this;
 
-        final BlockchainManager blockchainManager = BlockchainManager.getInstance();
-        blockchainManager.init(ctx);
-//        blockchainManager.writeWalletFileToDisk(walletJson, walletFilename);
-        blockchainManager.setConnectionMethod(BlockchainConnector.WEB3J);
-
         final Web3jManager web3j = Web3jManager.getInstance();
         web3j.init(web3jConnectionUrl, new Web3jManager.OnInitListener() {
             @Override
             public void onInitSuccessful(String clientVersion) {
-                web3j.saveCredentials(credentialsJson, ctx);
-                web3j.initKeystore(walletPassword, blockchainManager.getKeystorePath() + walletFilename, ctx, new Web3jManager.OnKeystoreInitListener() {
+                //Helpers.writeWalletFileToDisk(walletJson, walletFilename, ctx);
+                //web3j.initKeystoreWallet(walletFilename, walletPassword,);
+                web3j.initKeystoreJson(credentialsJson, new Web3jManager.OnKeystoreInitListener() {
                     @Override
                     public void onKeystoreInitSuccessful(String walletAddress) {
                         try {
