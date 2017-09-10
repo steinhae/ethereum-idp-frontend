@@ -40,7 +40,8 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-The first step is to create a configuration file named *local.properties* in *Repairchain/app/src/main/res/raw/*. The file contains a key *credentials_json*, the value is an encoded wallet in json format. The value of the other key *web3j_connection_url* points to the URL where the geth instance is running.
+The first step is to create a configuration file named *local.properties* in *Repairchain/app/src/main/res/raw/*. The file contains a key *credentials_json*, the value is an encoded wallet in json format. A wallet file can be encrypted with the following tool [ethereum-wallet-decryptor](https://github.com/steinhae/ethereum-wallet-decryptor/releases).
+The value of the other key *web3j_connection_url* points to the URL where the geth instance is running.
 
 ```
 credentials_json={"address":"0x","ecKeyPair":{"privateKey":xxx,"publicKey":xxx}}
@@ -74,5 +75,3 @@ See also the list of [contributors](https://github.com/steinhae/ethereum-idp-fro
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-
