@@ -19,8 +19,13 @@ import org.web3j.abi.datatypes.DynamicArray;
 import org.web3j.abi.datatypes.Utf8String;
 import org.web3j.abi.datatypes.generated.Bytes20;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +34,8 @@ import java.util.Properties;
 import de.tum.repairchain.contracts.Report_sol_Repairchain;
 
 import static android.content.Context.LOCATION_SERVICE;
+import static de.tum.repairchain.Constants.ETHEREUM_FOLDER;
+import static de.tum.repairchain.Constants.KEYSTORE_FOLDER;
 import static de.tum.repairchain.Constants.LOCATION_PERMISSIONS;
 
 /**
@@ -93,6 +100,45 @@ public class Helpers {
                 }
         }
         return bestLocation;
+    }
+
+    public static String writeWalletFileToDisk(String walletJson, String walletFilename, Context ctx) {
+        String keystorePath = ctx.getFilesDir() + "/" + ETHEREUM_FOLDER + "/" + KEYSTORE_FOLDER;
+        String fullWalletPath = keystorePath + walletFilename;
+        File keystoreDirectory = new File(keystorePath);
+        boolean directoryExists = keystoreDirectory.exists();
+
+        if (!directoryExists) {
+            directoryExists = keystoreDirectory.mkdirs();
+        }
+
+        if (directoryExists) {
+            File walletFile = new File(fullWalletPath);
+            if (!walletFile.exists()) {
+                try {
+                    if (walletFile.createNewFile()) {
+                        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                                new FileOutputStream(fullWalletPath), "utf-8"))) {
+                            writer.write(walletJson);
+                            Log.d(TAG, "Wallet file got written to disk successfully.");
+                        } catch (IOException e) {
+                            fullWalletPath = "";
+                            Log.d(TAG, "Error while writing wallet file to disk.");
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (IOException e) {
+                    fullWalletPath = "";
+                    Log.d(TAG, "Error while writing wallet file to disk.");
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            fullWalletPath = "";
+            Log.d(TAG, "Error while writing wallet file to disk.");
+        }
+
+        return fullWalletPath;
     }
 
     public static class DownloadImageTask extends AsyncTask<String, Integer, Bitmap> {

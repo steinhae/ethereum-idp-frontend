@@ -16,7 +16,8 @@ public class Constants {
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
     };
-
+    public static final String ETHEREUM_FOLDER = ".ethereum/";
+    public static final String KEYSTORE_FOLDER = "keystore/";
     public static final String REPAIRCHAIN_ADDRESS = "0x8674135D16dA9BA1e7C336F7b768161E6724260b";
     public static final String REPAIRCHAIN_GAS_LIMIT = "800000";
 }
