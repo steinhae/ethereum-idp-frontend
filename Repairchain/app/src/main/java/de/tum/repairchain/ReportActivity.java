@@ -74,7 +74,7 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     /**
-     * Methods that submits a report to the blockchain. A progress dialog indicates that an action is performed
+     * Method that submits a report to the blockchain. A progress dialog indicates that an action is performed
      * in the background.
      *
      * The method addReportToCity sends a transaction to the blockchain and returns if the transaction is confirmed.

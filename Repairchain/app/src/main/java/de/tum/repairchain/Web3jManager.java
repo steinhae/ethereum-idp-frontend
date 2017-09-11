@@ -26,9 +26,14 @@ import de.tum.repairchain.contracts.Report_sol_Repairchain;
 /**
  * Web3j Manager
  *
- * Web3j manager is a singleton class that handles the communciation with the blockchain via web3j as well as
- * wallet/credential management. Before usage the init method need to be called. Furthermore, the credentials need
- * to be initialized. That can happen via ...
+ * Web3j manager is a singleton class that handles the communication with the blockchain via web3j as well as
+ * wallet/credential management. To fully initialize the class 4 steps are necessary.
+ * 1. Call getInstance to create and get an instance.
+ * 2. Call the init method.
+ * 3. The credentials need to be initialized. That can happen via initKeystoreWallet or via initKeystoreJson.
+ * 4. Finally, a call to initRepairchain is necessary.
+ * At this point the getRepairchain method can be used to get a reference to the Repairchain object. The Repairchain
+ * object enables communication with the smart contract/blockchain.
  *
  */
 public class Web3jManager {
@@ -143,6 +148,14 @@ public class Web3jManager {
         return  gson.fromJson(cred.toString(), Credentials.class);
     }
 
+    /**
+     * Method to initialize credentials via wallet file. The wallet file needs to be saved to disk before it can be
+     * used. It can be saved before calling this function via Helpers.writeWalletFileToDisk. This method is slower
+     * compared to initKeystoreJson as the wallet decryption takes place at runtime.
+     *
+     * @param walletPassword the password to decrypt the wallet
+     * @param filepath the full file path of the wallet (on the Android device)
+     */
     public void initKeystoreWallet(String walletPassword, String filepath, final OnKeystoreInitListener listener) {
         try {
             credentials = WalletUtils.loadCredentials(walletPassword, filepath);
@@ -152,6 +165,13 @@ public class Web3jManager {
         }
     }
 
+    /**
+     * Method to initialize credentials via serialized credentials (decrypted wallet file). Serialization can be
+     * performed with the ethereum-wallet-decryptor tool. This method is faster compared to initKeystoreWallet.
+     * (https://github.com/steinhae/ethereum-wallet-decryptor/releases)
+     *
+     * @param credentialsJson the serialized credentials in json format
+     */
     public void initKeystoreJson(String credentialsJson, final OnKeystoreInitListener listener) {
         try {
             Gson gson = new Gson();
