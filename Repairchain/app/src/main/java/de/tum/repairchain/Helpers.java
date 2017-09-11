@@ -100,8 +100,9 @@ public class Helpers {
         return bestLocation;
     }
 
-    public static void writeWalletFileToDisk(String walletJson, String walletFilename, Context ctx) {
+    public static String writeWalletFileToDisk(String walletJson, String walletFilename, Context ctx) {
         String keystorePath = ctx.getFilesDir() + "/" + ETHEREUM_FOLDER + "/" + KEYSTORE_FOLDER;
+        String fullWalletPath = keystorePath + walletFilename;
         File keystoreDirectory = new File(keystorePath);
         boolean directoryExists = keystoreDirectory.exists();
 
@@ -110,27 +111,32 @@ public class Helpers {
         }
 
         if (directoryExists) {
-            File walletFile = new File(keystorePath + walletFilename);
+            File walletFile = new File(fullWalletPath);
             if (!walletFile.exists()) {
                 try {
                     if (walletFile.createNewFile()) {
                         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                                new FileOutputStream(keystorePath + walletFilename), "utf-8"))) {
+                                new FileOutputStream(fullWalletPath), "utf-8"))) {
                             writer.write(walletJson);
                             Log.d(TAG, "Wallet file got written to disk successfully.");
                         } catch (IOException e) {
+                            fullWalletPath = "";
                             Log.d(TAG, "Error while writing wallet file to disk.");
                             e.printStackTrace();
                         }
                     }
                 } catch (IOException e) {
+                    fullWalletPath = "";
                     Log.d(TAG, "Error while writing wallet file to disk.");
                     e.printStackTrace();
                 }
             }
         } else {
+            fullWalletPath = "";
             Log.d(TAG, "Error while writing wallet file to disk.");
         }
+
+        return fullWalletPath;
     }
 
     public static class DownloadImageTask extends AsyncTask<String, Integer, Bitmap> {

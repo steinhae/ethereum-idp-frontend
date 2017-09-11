@@ -42,8 +42,8 @@ public class SplashScreenActivity extends Activity {
         web3j.init(web3jConnectionUrl, new Web3jManager.OnInitListener() {
             @Override
             public void onInitSuccessful(String clientVersion) {
-                //Helpers.writeWalletFileToDisk(walletJson, walletFilename, ctx);
-                //web3j.initKeystoreWallet(walletFilename, walletPassword,);
+//                String fullWalletPath = Helpers.writeWalletFileToDisk(walletJson, walletFilename, ctx);
+//                web3j.initKeystoreWallet(walletPassword, fullWalletPath, new Web3jManager.OnKeystoreInitListener() {
                 web3j.initKeystoreJson(credentialsJson, new Web3jManager.OnKeystoreInitListener() {
                     @Override
                     public void onKeystoreInitSuccessful(String walletAddress) {
