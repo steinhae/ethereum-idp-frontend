@@ -40,6 +40,12 @@ import de.tum.repairchain.contracts.Report_sol_Repairchain;
 import static de.tum.repairchain.Constants.*;
 import static de.tum.repairchain.Helpers.*;
 
+/**
+ * Report Activity
+ *
+ * This activity is used to create Reports. It can be started from the MainActivity or ReportsMapActivity.
+ *
+ */
 public class ReportActivity extends AppCompatActivity implements OnMapReadyCallback {
     private Context context;
     private GoogleMap map;
@@ -58,12 +64,23 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
     @BindView(R.id.et_description)
     EditText descriptionField;
 
+    /**
+     * This methods starts an activity to share an image via IPFS (for simplicity reasons "upload").
+     */
     @OnClick({R.id.btn_upload})
     public void clickUploadButton(Button btn) {
         Intent intent = new Intent(ReportActivity.this, UploadImage.class);
         startActivityForResult(intent, JUST_SOME_CODE);
     }
 
+    /**
+     * Method that submits a report to the blockchain. A progress dialog indicates that an action is performed
+     * in the background.
+     *
+     * The method addReportToCity sends a transaction to the blockchain and returns if the transaction is confirmed.
+     * Therefore execution takes time. It can be observed that sending the transaction itself takes only a few seconds.
+     * Further optimizations are conceivable to increase performance/usability.
+     */
     @OnClick({R.id.btn_submit_report})
     public void submitReport(Button btn) {
         final double latitude = currentLocation.getLatitude();

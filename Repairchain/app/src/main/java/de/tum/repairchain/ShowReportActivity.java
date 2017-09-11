@@ -22,6 +22,14 @@ import de.tum.repairchain.contracts.Report_sol_Repairchain;
 import static de.tum.repairchain.Constants.*;
 import static de.tum.repairchain.Helpers.*;
 
+/**
+ * Show Report Activity
+ *
+ * This activity is used to display an existing report. It can be opened by clicking on a report
+ * in the ReportsMapActivity. The report gets loaded in the onCreate method. A confirmation can be added with the
+ * confirm button.
+ *
+ */
 public class ShowReportActivity extends AppCompatActivity {
 
     private Bytes20 reportId;
@@ -87,30 +95,9 @@ public class ShowReportActivity extends AppCompatActivity {
                         new DownloadImageTask(ShowReportActivity.this, reportPhoto).execute(imageHash);
                     }
                 });
-                /*
-                reportDescription.setText(report.getDescription());
-                if (isFix) {
-                    reportTitle.setText(R.string.fix);
-                    reportConfirmations.setText(report.getFixConfirmationCount().toString());
-                    // actually a slightly redundant check because of this being fetched in the map activity
-                    // but as they say: rather safe than sorry
-                    if (report.getEnoughFixConfirmations())
-                        confirmButton.setEnabled(false);
-                } else {
-                    reportConfirmations.setText(report.getConfirmationCount().toString());
-                    // actually a slightly redundant check because of this being fetched in the map activity
-                    // but as they say: rather safe than sorry
-                    if (report.getEnouoghConfirmationsFlag())
-                        confirmButton.setEnabled(false);
-                }
-                reportTime.setText(report.getCreationDate().toString());
-
-                new DownloadImageTask(ShowReportActivity.this, reportPhoto).execute(imageHash);
-                */
                 progressDialog.dismiss();
             }
         }).start();
-
     }
 
     @OnClick({R.id.btn_confirm})

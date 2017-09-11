@@ -30,6 +30,12 @@ import kotlin.jvm.functions.Function0;
 import static de.tum.repairchain.Constants.*;
 import static de.tum.repairchain.Helpers.*;
 
+/**
+ * Upload Image
+ *
+ *
+ *
+ */
 public class UploadImage extends AppCompatActivity {
 
     private IPFSDaemon ipfsDaemon = new IPFSDaemon(this);

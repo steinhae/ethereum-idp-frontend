@@ -33,6 +33,12 @@ import org.web3j.abi.datatypes.generated.Bytes20;
 import static de.tum.repairchain.Constants.*;
 import static de.tum.repairchain.Helpers.*;
 
+/**
+ * Reports Map Activity
+ *
+ * This activity is used to show reports for a city on a map.
+ *
+ */
 public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
     private Context context;
     private GoogleMap mMap;
@@ -90,11 +96,12 @@ public class ReportsMapActivity extends FragmentActivity implements OnMapReadyCa
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * This is where we can add markers or lines, add listeners or move the camera.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
+     *
+     * Furthermore, the reports are loaded in a background thread.
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
