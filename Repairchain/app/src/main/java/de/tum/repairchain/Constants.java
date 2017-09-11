@@ -2,10 +2,6 @@ package de.tum.repairchain;
 
 import android.Manifest;
 
-/**
- * Created by palac on 17.08.2017.
- */
-
 public class Constants {
     public static final String RETURN_IMAGE_URL = "Image URL";
     public static final String RETURN_HASH = "Return Hash";

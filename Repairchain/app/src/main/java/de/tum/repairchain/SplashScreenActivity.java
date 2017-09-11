@@ -14,6 +14,16 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * Splash Screen Activity
+ *
+ * This activity is the first activity that the user sees after starting the app. It shows a splash screen with
+ * a progress bar. In the background the connection to the geth instance via web3j is established and the wallet gets
+ * initialized.
+ *
+ * There are two ways to initialize a wallet. They are documented in the Web3jManager class.
+ *
+ */
 public class SplashScreenActivity extends Activity {
 
     @BindView(R.id.msg_greeting)

@@ -32,9 +32,11 @@ import static android.content.Context.LOCATION_SERVICE;
 import static de.tum.repairchain.Constants.LOCATION_PERMISSIONS;
 
 /**
- * Created by palac on 19.08.2017.
+ * Helper class
+ *
+ * Contains various support methods.
+ *
  */
-
 public class Helpers {
 
     private static final String TAG = Helpers.class.getSimpleName();

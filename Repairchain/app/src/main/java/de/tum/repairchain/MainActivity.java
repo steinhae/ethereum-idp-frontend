@@ -7,6 +7,13 @@ import android.widget.ImageButton;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+/**
+ * Activity Overview Screen
+ *
+ * This activity displays an overview screen that contains tiles to perform actions such as adding a report and
+ * starting the map view.
+ *
+ */
 public class MainActivity extends AppCompatActivity {
 
     @OnClick({ R.id.btn_report })

@@ -1,7 +1,10 @@
 package de.tum.repairchain;
 
 /**
- * Created by Hannes on 17.08.2017.
+ * Activity for loading layout resources
+ *
+ * This activity is used to display different layout resources for a tutorial on user interface design.
+ *
  */
 public enum BlockchainConnector {
     GETH,

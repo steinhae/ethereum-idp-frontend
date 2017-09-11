@@ -22,6 +22,14 @@ import java.util.concurrent.TimeUnit;
 
 import de.tum.repairchain.contracts.Report_sol_Repairchain;
 
+/**
+ * Web3j Manager
+ *
+ * Web3j manager is a singleton class that handles the communciation with the blockchain via web3j as well as
+ * wallet/credential management. Before usage the init method need to be called. Furthermore, the credentials need
+ * to be initialized. That can happen via ...
+ *
+ */
 public class Web3jManager {
 
     private static final String TAG = Web3jManager.class.getSimpleName();
